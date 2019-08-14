@@ -1,17 +1,20 @@
 package gep
 
 type TestData struct {
-	TermVarSet []byte
-	Result int
+	TermVarSet []float64
+	Result     float64
 }
 
 func ReadTestData() []TestData {
 	return []TestData{
-		TestData{[]byte{'1','2'},-9},
-		TestData{[]byte{'4','3'},35},
-		TestData{[]byte{'5','2'},56},
-		TestData{[]byte{'7','6'},-65},
-		TestData{[]byte{'3','2'},-5},
-		TestData{[]byte{'3','1'},20},
-		TestData{[]byte{'4','2'},0}}
+		TestData{[]float64{6.9408}, 44.91},
+		TestData{[]float64{-7.8664}, 7.341},
+		TestData{[]float64{-2.7861}, -4.477},
+		TestData{[]float64{-5.0944}, -2.307},
+		TestData{[]float64{9.4895}, 73.494},
+		TestData{[]float64{-9.6197}, 17.41},
+		TestData{[]float64{-9.4145}, 16.073},
+		TestData{[]float64{-0.1432}, -0.419},
+		TestData{[]float64{0.9107}, 3.147},
+		TestData{[]float64{2.1762}, 8.897}}
 }

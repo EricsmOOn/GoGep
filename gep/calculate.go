@@ -4,123 +4,131 @@ import (
 	"errors"
 	"math"
 	"strconv"
-	"unicode"
+	"strings"
 )
 
-func Calculate(g []byte, v []byte ,termSet []byte) (int,error) {
+func Calculate(g []byte, v []float64, termSet []byte) (float64, error) {
 
-	for gno,b := range g{
-		for ts,e := range termSet{
-			if e == b{
-				tmp := g[gno+1:]
-				g = append(g[:gno],v[ts])
-				g = append(g,tmp...)
+	slice := make([]interface{}, 0)
+	for _, value := range g {
+		slice = append(slice, value)
+	}
+
+	for gno, b := range slice {
+		switch b.(type) {
+		case byte:
+			for ts, e := range termSet {
+				if e == b {
+					tmp := slice[gno+1:]
+					slice = append(slice[:gno], v[ts])
+					slice = append(slice, tmp...)
+				}
 			}
+		default:
 		}
 	}
 
-	//fmt.Println(*(*string)(unsafe.Pointer(&g)))
-	return calculate(infix2ToPostfix(string(g)))
+	return calculate(infix2ToPostfix(slice))
 }
 
 //1.添加操作数 2.除以零报错 3.Q使用的是结果向下取整
-func calculate(postfix string) (int,error) {
+func calculate(postfix string) (float64, error) {
 	stack := ItemStack{}
-	fixLen := len(postfix)
+	split := strings.Fields(postfix)
+
+	fixLen := len(split)
+
 	for i := 0; i < fixLen; i++ {
-		nextChar := string(postfix[i])
-		// 数字：直接压栈
-		if unicode.IsDigit(rune(postfix[i])) {
-			stack.Push(nextChar)
-		} else if GetOperationFactorNum([]byte(nextChar)[0]) == 1{
-			num, _ := strconv.Atoi(stack.Pop())
+		nextChar := string(split[i])
+		if GetOperationFactorNum([]byte(nextChar)[0]) == 1 && len(nextChar) == 1 {
+			num, _ := strconv.ParseFloat(stack.Pop(), 64)
 			switch nextChar {
 			case "Q":
-				if num < 0 {return 0,errors.New("开方错误(小于零)")}
-				stack.Push(strconv.Itoa(int(math.Floor(math.Sqrt(float64(num))))))
+				if num < 0 {
+					return 0, errors.New("开方错误(小于零)")
+				}
+				stack.Push(strconv.FormatFloat(math.Sqrt(num), 'f', -1, 64))
 			case "N":
-				stack.Push(strconv.Itoa(-num))
+				stack.Push(strconv.FormatFloat(-num, 'f', -1, 64))
 			}
-		} else if GetOperationFactorNum([]byte(nextChar)[0]) == 2{
+		} else if GetOperationFactorNum([]byte(nextChar)[0]) == 2 && len(nextChar) == 1 {
 			// 操作符：取出两个数字计算值，再将结果压栈
-			num2, _ := strconv.Atoi(stack.Pop())
-			num1, _ := strconv.Atoi(stack.Pop())
+			num2, _ := strconv.ParseFloat(stack.Pop(), 64)
+			num1, _ := strconv.ParseFloat(stack.Pop(), 64)
 			switch nextChar {
 			case "+":
-				stack.Push(strconv.Itoa(num1 + num2))
+				stack.Push(strconv.FormatFloat(num1+num2, 'f', -1, 64))
 			case "-":
-				stack.Push(strconv.Itoa(num1 - num2))
+				stack.Push(strconv.FormatFloat(num1-num2, 'f', -1, 64))
 			case "*":
-				stack.Push(strconv.Itoa(num1 * num2))
+				stack.Push(strconv.FormatFloat(num1*num2, 'f', -1, 64))
 			case "%":
-				if num2 == 0{
-					return 0,errors.New("除零错误")
+				if num2 == 0 {
+					return 0, errors.New("除零错误")
 				}
-				stack.Push(strconv.Itoa(num1 % num2))
+				stack.Push(strconv.FormatFloat(math.Mod(num1, num2), 'f', -1, 64))
 			case "/":
-				if num2 == 0{
-					return 0,errors.New("除零错误")
+				if num2 == 0 {
+					return 0, errors.New("除零错误")
 				}
-				stack.Push(strconv.Itoa(num1 / num2))
+				stack.Push(strconv.FormatFloat(num1/num2, 'f', -1, 64))
 			}
+		} else {
+			stack.Push(nextChar)
 		}
 	}
-	result, _ := strconv.Atoi(stack.Top())
-	return result,nil
+	result, _ := strconv.ParseFloat(stack.Top(), 64)
+	return result, nil
 }
 
 // 中缀表达式转后缀表达式
-func infix2ToPostfix(exp string) string {
+func infix2ToPostfix(exp []interface{}) string {
 	stack := ItemStack{}
 	postfix := ""
 	expLen := len(exp)
 
 	// 遍历整个表达式
 	for i := 0; i < expLen; i++ {
+		switch exp[i].(type) {
+		case byte:
+			char := string(exp[i].(byte))
 
-		char := string(exp[i])
-
-		switch char {
-		case " ":
-			continue
-		case "(":
-			// 左括号直接入栈
-			stack.Push("(")
-		case ")":
-			// 右括号则弹出元素直到遇到左括号
-			for !stack.IsEmpty() {
-				preChar := stack.Top()
-				if preChar == "(" {
-					stack.Pop() // 弹出 "("
-					break
+			switch char {
+			case " ":
+				continue
+			case "(":
+				// 左括号直接入栈
+				stack.Push("(")
+			case ")":
+				// 右括号则弹出元素直到遇到左括号
+				for !stack.IsEmpty() {
+					preChar := stack.Top()
+					if preChar == "(" {
+						stack.Pop() // 弹出 "("
+						break
+					}
+					postfix += preChar
+					stack.Pop()
 				}
-				postfix += preChar
-				stack.Pop()
-			}
 
+			default:
+				// 操作符：遇到高优先级的运算符，不断弹出，直到遇见更低优先级运算符
+				for !stack.IsEmpty() {
+					top := stack.Top()
+					if top == "(" || isLower(top, char) {
+						break
+					}
+					postfix += top
+					stack.Pop()
+				}
+				// 低优先级的运算符入栈
+				stack.Push(char)
+			}
+		case float64:
 			// 数字则直接输出
-		case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
-			j := i
-			digit := ""
-			for ; j < expLen && unicode.IsDigit(rune(exp[j])); j++ {
-				digit += string(exp[j])
-			}
-			postfix += digit
-			i = j - 1 // i 向前跨越一个整数，由于执行了一步多余的 j++，需要减 1
-
-		default:
-			// 操作符：遇到高优先级的运算符，不断弹出，直到遇见更低优先级运算符
-			for !stack.IsEmpty() {
-				top := stack.Top()
-				if top == "(" || isLower(top, char) {
-					break
-				}
-				postfix += top
-				stack.Pop()
-			}
-			// 低优先级的运算符入栈
-			stack.Push(char)
+			postfix += strconv.FormatFloat(exp[i].(float64), 'f', -1, 64)
 		}
+		postfix += " "
 	}
 
 	// 栈不空则全部输出
