@@ -48,13 +48,13 @@ func CreatGenes(numOfGenes int, num int, headLength int, tailLength int, funSet 
 	return genes
 }
 
-func CalculateFitness(genes []*Gene, termSet []byte, mM int) {
+func CalculateFitness(connectFun byte, geneLength int, numOfGenes int, genes []*Gene, termSet []byte, mM float64) {
 	testData := ReadTestData()
 	var termVarSet []float64
 
 	for _, gene := range genes {
 		//解码
-		g := Operate(*gene, termSet)
+		g := Operate(geneLength, numOfGenes, *gene, termSet)
 
 		for _, td := range testData {
 			//求个体适应度
@@ -63,15 +63,13 @@ func CalculateFitness(genes []*Gene, termSet []byte, mM int) {
 			termVarSet = td.TermVarSet
 
 			//求表达 result
-			result, err := Calculate(g, termVarSet, termSet)
-			if err == nil {
-				fi := float64(mM) - (math.Abs((result-td.Result)/td.Result) * 100)
-				if fi > 0 {
-					gene.Fitness += fi
-				}
-				//fmt.Print(" - ")
-				//fmt.Println(err)
+			result := Calculate(connectFun, g, termVarSet, termSet)
+			fi := mM - math.Abs(result-td.Result)
+			if fi > 0 {
+				gene.Fitness += fi
 			}
+			//fmt.Print(" - ")
+			//fmt.Println(err)
 		}
 	}
 

@@ -7,28 +7,45 @@ import (
 	"strings"
 )
 
-func Calculate(g []byte, v []float64, termSet []byte) (float64, error) {
+func Calculate(connectFun byte, g [][]byte, v []float64, termSet []byte) float64 {
 
-	slice := make([]interface{}, 0)
-	for _, value := range g {
-		slice = append(slice, value)
-	}
+	var result float64
+	for i := 0; i < len(g); i++ {
+		slice := make([]interface{}, 0)
+		for _, value := range g[i] {
+			slice = append(slice, value)
+		}
 
-	for gno, b := range slice {
-		switch b.(type) {
-		case byte:
-			for ts, e := range termSet {
-				if e == b {
-					tmp := slice[gno+1:]
-					slice = append(slice[:gno], v[ts])
-					slice = append(slice, tmp...)
+		for gno, b := range slice {
+			switch b.(type) {
+			case byte:
+				for ts, e := range termSet {
+					if e == b {
+						tmp := slice[gno+1:]
+						slice = append(slice[:gno], v[ts])
+						slice = append(slice, tmp...)
+					}
 				}
+			default:
 			}
-		default:
+		}
+
+		f, e := calculate(infix2ToPostfix(slice))
+		if e != nil {
+			return 0
+		}
+		switch connectFun {
+		case '+':
+			result += f
+		case '-':
+			result -= f
+		case '*':
+			result = result * f
+		case '/':
+			result = result / f
 		}
 	}
-
-	return calculate(infix2ToPostfix(slice))
+	return result
 }
 
 //1.添加操作数 2.除以零报错 3.Q使用的是结果向下取整

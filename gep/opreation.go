@@ -13,7 +13,7 @@ type Operation struct {
 func GetOperationFactorNum(operationName byte) int {
 	num := -1
 	switch operationName {
-	case '+', '-', '*', '/','%':
+	case '+', '-', '*', '/', '%':
 		num = 2
 	case 'Q', 'N':
 		num = 1
@@ -60,20 +60,28 @@ func isTerm(factor byte, termSet []byte) bool {
 	return false
 }
 
-func Operate(gene Gene, termSet []byte) []byte {
+func Operate(geneLength int, numOfGenes int, gene Gene, termSet []byte) (k [][]byte) {
+	for i := 0; i < numOfGenes; i++ {
+		k = append(k, operate(gene.Gene[i*geneLength:(i+1)*geneLength], termSet))
+	}
+	return k
+}
+
+func operate(s []byte, termSet []byte) []byte {
 	//将基因缩短为有效长度
-	s := gene.Gene
 
 	si := 0
 	oi := 1
 
-	if isTerm(s[0],termSet){
+	if isTerm(s[0], termSet) {
 		s = s[:1]
 	}
 
 	for {
-		if si == oi && si != 0{break}
-		if !isTerm(s[si],termSet){
+		if si == oi && si != 0 {
+			break
+		}
+		if !isTerm(s[si], termSet) {
 			oi += GetOperationFactorNum(s[si])
 		}
 		si++
@@ -87,7 +95,7 @@ func Operate(gene Gene, termSet []byte) []byte {
 	j := 0
 	pos := link.PushBack(i)
 	if !isTerm(s[i], termSet) {
-		for ; i < len(s); {
+		for i < len(s) {
 			//查找i节点的位置
 			pos = search(link, i)
 			if GetOperationFactorNum(s[i]) == 1 {
@@ -117,10 +125,9 @@ func Operate(gene Gene, termSet []byte) []byte {
 					link.InsertAfter(j, pos)
 				}
 			}
-			i = i+1
+			i = i + 1
 		}
 	}
-
 
 	//基因解码后序号反代
 	var result []byte
@@ -151,5 +158,3 @@ func search(link *list.List, aim int) *list.Element {
 	}
 	return f
 }
-
-
