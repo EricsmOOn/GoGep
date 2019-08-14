@@ -31,7 +31,8 @@ func main() {
 
 	//test(populationsSize,numOfGenes,geneLength,headLength,tailLength,funSet,termSet,connectFun,mM)
 
-	findFintness(999, 1000, populationsSize, numOfGenes, geneLength, headLength, tailLength, funSet, termSet, connectFun, mM)
+	//1.最小适应度 2.最大适应度 3.需要的个数
+	findFintness(999.99, 1000, 10, populationsSize, numOfGenes, geneLength, headLength, tailLength, funSet, termSet, connectFun, mM)
 
 }
 
@@ -59,7 +60,8 @@ func test(populationsSize, numOfGenes, geneLength, headLength, tailLength int, f
 	}
 }
 
-func findFintness(minFitness, maxFitness float64, populationsSize, numOfGenes, geneLength, headLength, tailLength int, funSet, termSet []byte, connectFun byte, mM float64) {
+func findFintness(minFitness, maxFitness float64, num, populationsSize, numOfGenes, geneLength, headLength, tailLength int, funSet, termSet []byte, connectFun byte, mM float64) {
+	l := 0
 	for {
 		genes := gep.CreatGenes(numOfGenes, populationsSize, headLength, tailLength, funSet, termSet)
 		gep.CalculateFitness(connectFun, geneLength, numOfGenes, genes, termSet, mM)
@@ -80,9 +82,11 @@ func findFintness(minFitness, maxFitness float64, populationsSize, numOfGenes, g
 						fmt.Printf(" %s ", string(connectFun))
 					}
 				}
-
 				fmt.Println()
-				return
+				l++
+				if l >= num {
+					return
+				}
 			}
 		}
 	}
