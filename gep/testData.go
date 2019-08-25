@@ -18,3 +18,8 @@ func ReadTestData() []TestData {
 		TestData{[]float64{0.9107}, 3.147},
 		TestData{[]float64{2.1762}, 8.897}}
 }
+
+func GetDataNum() int {
+	data := ReadTestData()
+	return len(data)
+}

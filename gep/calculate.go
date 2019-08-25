@@ -7,7 +7,35 @@ import (
 	"strings"
 )
 
-func Calculate(connectFun byte, g [][]byte, v []float64, termSet []byte) float64 {
+//计算种群适应度
+func CalculateFitness(genes []*Gene) {
+	for _, gene := range genes {
+
+		calculateFit(gene, GetInfixExpressions(*gene))
+	}
+}
+
+//简化式子后计算个体适应度
+func calculateFit(gene *Gene, easyEquation [][]byte) {
+	testData := ReadTestData()
+
+	//注入中缀
+	g := easyEquation
+	gene.InfixExpression = g
+
+	for _, td := range testData {
+		//逐个读入测试数据
+		//求表达 result
+		result := calculatePerFit(g, td.TermVarSet)
+		fi := SelectRang - math.Abs(result-td.Result)
+		if fi > 0 {
+			gene.Fitness += fi
+		}
+	}
+}
+
+//计算个体对一组数据的适应度
+func calculatePerFit(g [][]byte, v []float64) float64 {
 
 	var result float64
 	for i := 0; i < len(g); i++ {
@@ -19,7 +47,7 @@ func Calculate(connectFun byte, g [][]byte, v []float64, termSet []byte) float64
 		for gno, b := range slice {
 			switch b.(type) {
 			case byte:
-				for ts, e := range termSet {
+				for ts, e := range TermSet {
 					if e == b {
 						tmp := slice[gno+1:]
 						slice = append(slice[:gno], v[ts])
@@ -34,7 +62,7 @@ func Calculate(connectFun byte, g [][]byte, v []float64, termSet []byte) float64
 		if e != nil {
 			return 0
 		}
-		switch connectFun {
+		switch LinkFun {
 		case '+':
 			result += f
 		case '-':
@@ -48,7 +76,8 @@ func Calculate(connectFun byte, g [][]byte, v []float64, termSet []byte) float64
 	return result
 }
 
-//1.添加操作数 2.除以零报错 3.Q使用的是结果向下取整
+// 逆波兰表达式求个体对一条样例的适应度
+// 1.添加操作数 2.除以零报错 3.Q使用的是结果向下取整
 func calculate(postfix string) (float64, error) {
 	stack := ItemStack{}
 	split := strings.Fields(postfix)
@@ -79,11 +108,6 @@ func calculate(postfix string) (float64, error) {
 				stack.Push(strconv.FormatFloat(num1-num2, 'f', -1, 64))
 			case "*":
 				stack.Push(strconv.FormatFloat(num1*num2, 'f', -1, 64))
-			case "%":
-				if num2 == 0 {
-					return 0, errors.New("除零错误")
-				}
-				stack.Push(strconv.FormatFloat(math.Mod(num1, num2), 'f', -1, 64))
 			case "/":
 				if num2 == 0 {
 					return 0, errors.New("除零错误")

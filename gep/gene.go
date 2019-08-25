@@ -1,68 +1,92 @@
 package gep
 
 import (
-	"math"
+	"fmt"
 	"math/rand"
 	"time"
+	"unsafe"
 )
 
-var R *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+var R = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 type Gene struct {
-	Gene       []byte  //基因序列
-	Fitness    float64 //适应度
-	Generation int     //代数
+	Gene            []byte   //基因序列
+	InfixExpression [][]byte //中缀表达式
+	Fitness         float64  //适应度
+	Generation      int      //代数
 }
 
-func creatRandomGene(generation int, numOfGenes int, headLength int, tailLength int, funSet []byte, termSet []byte) *Gene {
-	funSetNum := len(funSet)
-	termSetNum := len(termSet)
+//显示自己
+func PrintSelf(genes []*Gene) {
+	fmt.Printf("Generation - [%3d]\n", genes[0].Generation)
+	for n, gene := range genes {
+		fmt.Printf("%s - [%2d] = %.4f \n", *(*string)(unsafe.Pointer(&gene.Gene)), n, gene.Fitness) //高效转换byte到String
 
-	set := append(funSet, termSet...)
+		////显示中缀表达式
+		//k := gene.InfixExpression
+		//for i := 0; i < len(k); i++ {
+		//	fmt.Print(string(k[i]))
+		//	if i < len(k)-1 {
+		//		fmt.Printf(" %s ", string(ConnectFun))
+		//	}
+		//}
+		//fmt.Println()
 
-	gene := Gene{make([]byte, 0), 0, generation}
+	}
 
-	for k := 0; k < numOfGenes; k++ {
+}
 
-		for i := 0; i < headLength; i++ {
+//随机创建个体
+func creatRandomGene(generation int) *Gene {
+	funSetNum := len(FunSet)
+	termSetNum := len(TermSet)
+
+	set := append(FunSet, TermSet...)
+
+	gene := Gene{make([]byte, 0, NumOfGenes*GeneLength), make([][]byte, 0), 0, generation}
+
+	for k := 0; k < NumOfGenes; k++ {
+
+		for i := 0; i < HeadLength; i++ {
 			gene.Gene = append(gene.Gene, set[R.Intn(funSetNum+termSetNum)])
 		}
 
 		//fmt.Println(*(*string)(unsafe.Pointer(&gene.Gene)))
 
-		for i := 0; i < tailLength; i++ {
-			gene.Gene = append(gene.Gene, termSet[R.Intn(termSetNum)])
+		for i := 0; i < TailLength; i++ {
+			gene.Gene = append(gene.Gene, TermSet[R.Intn(termSetNum)])
 		}
 	}
 
 	return &gene
 }
 
-func CreatGenes(numOfGenes int, num int, headLength int, tailLength int, funSet []byte, termSet []byte) []*Gene {
+//随机创建种群
+func CreatGenes() []*Gene {
 
 	var genes []*Gene
 	var gene *Gene
-	for i := 0; i < num; i++ {
-		gene = creatRandomGene(0, numOfGenes, headLength, tailLength, funSet, termSet)
+	for i := 0; i < PopulationsSize; i++ {
+		gene = creatRandomGene(0)
 		genes = append(genes, gene)
 	}
 	return genes
 }
 
-func Evolution(genetic *Gene, numOfGenes int, num int, headLength int, tailLength int, funSet []byte, termSet []byte) []*Gene {
-	var genes []*Gene
-	var gene *Gene
-	genetic.Generation += 1
-	genetic.Fitness = 0
-	genes = append(genes, genetic)
-	for i := 0; i < num-1; i++ {
-		gene = creatRandomGene(genetic.Generation, numOfGenes, headLength, tailLength, funSet, termSet)
-		genes = append(genes, gene)
-	}
-	return genes
+//个体遗传
+func Evolution(dad Gene, dads []*Gene) Gene {
+	//深拷贝
+	genes := make([]byte, len(dad.Gene))
+	copy(genes, dad.Gene)
+	son := Gene{genes, make([][]byte, 0), 0, dad.Generation + 1}
+	//变异
+	Change(&son, dads)
+	//返回
+	return son
 }
 
-func Select(genes []*Gene) *Gene {
+//转盘赌
+func Select(genes []*Gene) Gene {
 	fitness := float64(0)
 	for _, gene := range genes {
 		fitness += gene.Fitness
@@ -71,48 +95,9 @@ func Select(genes []*Gene) *Gene {
 	for _, gene := range genes {
 		f -= gene.Fitness
 		if f <= 0 {
-			return gene
+			return *gene
 		}
 	}
-	return nil
-}
-
-func Mutation(mutationRate float64, gene *Gene, headLength, geneLength int, funSet, termSet []byte) *Gene {
-	funSet = append(funSet, termSet...)
-	if R.Float64() < mutationRate {
-		intn := R.Intn(len(gene.Gene))
-		if intn%geneLength < headLength {
-			gene.Gene[intn] = funSet[R.Intn(len(funSet))]
-		} else {
-			gene.Gene[intn] = termSet[R.Intn(len(termSet))]
-		}
-	}
-	return gene
-}
-
-func CalculateFitness(connectFun byte, geneLength int, numOfGenes int, genes []*Gene, termSet []byte, mM float64) {
-	testData := ReadTestData()
-	var termVarSet []float64
-
-	for _, gene := range genes {
-		//解码
-		g := Operate(geneLength, numOfGenes, *gene, termSet)
-
-		for _, td := range testData {
-			//求个体适应度
-
-			//逐个读入测试数据
-			termVarSet = td.TermVarSet
-
-			//求表达 result
-			result := Calculate(connectFun, g, termVarSet, termSet)
-			fi := mM - math.Abs(result-td.Result)
-			if fi > 0 {
-				gene.Fitness += fi
-			}
-			//fmt.Print(" - ")
-			//fmt.Println(err)
-		}
-	}
-
+	fmt.Print("Error!")
+	return *genes[0]
 }

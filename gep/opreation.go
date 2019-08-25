@@ -10,6 +10,7 @@ type Operation struct {
 	priority  int  //优先级 越大优先级越高
 }
 
+//获得函数参数个数
 func GetOperationFactorNum(operationName byte) int {
 	num := -1
 	switch operationName {
@@ -23,6 +24,7 @@ func GetOperationFactorNum(operationName byte) int {
 	return num
 }
 
+//获得函数优先级
 func GetOperationPriority(operationName byte) int {
 	priority := -1
 	switch operationName {
@@ -40,9 +42,10 @@ func GetOperationPriority(operationName byte) int {
 	return priority
 }
 
-func GetMaxFactorNum(operationNames []byte) int {
+//获得函数集最大参数个数
+func GetMaxFactorNum() int {
 	maxNum := 0
-	for _, name := range operationNames {
+	for _, name := range FunSet {
 		i := GetOperationFactorNum(name)
 		if i > maxNum {
 			maxNum = i
@@ -51,8 +54,9 @@ func GetMaxFactorNum(operationNames []byte) int {
 	return maxNum
 }
 
-func isTerm(factor byte, termSet []byte) bool {
-	for _, value := range termSet {
+//判断函数是否为终点集
+func isTerm(factor byte) bool {
+	for _, value := range TermSet {
 		if value == factor {
 			return true
 		}
@@ -60,20 +64,22 @@ func isTerm(factor byte, termSet []byte) bool {
 	return false
 }
 
-func Operate(geneLength int, numOfGenes int, gene Gene, termSet []byte) (k [][]byte) {
-	for i := 0; i < numOfGenes; i++ {
-		k = append(k, operate(gene.Gene[i*geneLength:(i+1)*geneLength], termSet))
+//获得个体中缀表达式
+func GetInfixExpressions(gene Gene) (k [][]byte) {
+	for i := 0; i < NumOfGenes; i++ {
+		k = append(k, GetInfixExpression(gene.Gene[i*GeneLength:(i+1)*GeneLength]))
 	}
 	return k
 }
 
-func operate(s []byte, termSet []byte) []byte {
+//获得单个基因中缀表达式
+func GetInfixExpression(s []byte) []byte {
 	//将基因缩短为有效长度
 
 	si := 0
 	oi := 1
 
-	if isTerm(s[0], termSet) {
+	if isTerm(s[0]) {
 		s = s[:1]
 	}
 
@@ -81,7 +87,7 @@ func operate(s []byte, termSet []byte) []byte {
 		if si == oi && si != 0 {
 			break
 		}
-		if !isTerm(s[si], termSet) {
+		if !isTerm(s[si]) {
 			oi += GetOperationFactorNum(s[si])
 		}
 		si++
@@ -94,13 +100,13 @@ func operate(s []byte, termSet []byte) []byte {
 	i := 0
 	j := 0
 	pos := link.PushBack(i)
-	if !isTerm(s[i], termSet) {
+	if !isTerm(s[i]) {
 		for i < len(s) {
 			//查找i节点的位置
 			pos = search(link, i)
 			if GetOperationFactorNum(s[i]) == 1 {
 				j++
-				if !isTerm(s[j], termSet) {
+				if !isTerm(s[j]) {
 					pos1 := link.InsertAfter(-1, pos)
 					pos1 = link.InsertAfter(j, pos1)
 					pos1 = link.InsertAfter(-2, pos1)
@@ -109,7 +115,7 @@ func operate(s []byte, termSet []byte) []byte {
 				}
 			} else if GetOperationFactorNum(s[i]) == 2 {
 				j++
-				if !isTerm(s[j], termSet) {
+				if !isTerm(s[j]) {
 					pos1 := link.InsertBefore(-2, pos)
 					pos1 = link.InsertBefore(j, pos1)
 					pos1 = link.InsertBefore(-1, pos1)
@@ -117,7 +123,7 @@ func operate(s []byte, termSet []byte) []byte {
 					link.InsertBefore(j, pos)
 				}
 				j++
-				if !isTerm(s[j], termSet) {
+				if !isTerm(s[j]) {
 					pos2 := link.InsertAfter(-1, pos)
 					pos2 = link.InsertAfter(j, pos2)
 					pos2 = link.InsertAfter(-2, pos2)
@@ -148,6 +154,7 @@ func operate(s []byte, termSet []byte) []byte {
 	return result
 }
 
+//寻找双向链表的节点
 func search(link *list.List, aim int) *list.Element {
 	f := link.Front()
 	for i := link.Len(); i > 0; i-- {
