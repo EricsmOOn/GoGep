@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"gep-go/gep"
+	"github.com/EricsmOOn/gep-go/chart"
+	"github.com/EricsmOOn/gep-go/gep"
 	"unsafe"
 )
 
@@ -14,8 +15,10 @@ func main() {
 	for true {
 		//计算父代适应度
 		gep.CalculateFitness(genes)
+		//插入图标
+		chart.GetChartData(genes)
 		//显示自己
-		gep.PrintSelf(genes)
+		//gep.PrintSelf(genes)
 		//终止条件
 		for _, i := range genes {
 			if i.Fitness > gep.ResultRang {
@@ -27,6 +30,8 @@ func main() {
 						fmt.Print(string(gep.LinkFun))
 					}
 				}
+				//展示图表
+				chart.PrintChart()
 				return
 			}
 		}

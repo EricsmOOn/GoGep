@@ -1,18 +1,18 @@
 package gep
 
-//头部长度
+//头部长度 7 6 简单/a3
 var HeadLength = 7
 
-//基因产生个数
+//基因产生个数 20 30
 var PopulationsSize = 20
 
 //选择范围
 var SelectRang = float64(100)
 
 //选择精度
-var Precision = 0.1
+var Precision = 0.01
 
-//染色体含有基因数
+//染色体含有基因数 3 4
 var NumOfGenes = 3
 
 //连接函数
@@ -24,13 +24,13 @@ var FunSet = []byte{'+', '-', '*', '/'}
 //终点集
 var TermSet = []byte{'a'}
 
-//直接变异率
+//直接变异率 0.144 0.0385
 var DcMutationRate = 0.144
 
-//单点重组率
+//单点重组率 0.4 0.3
 var OnePointRecombinationRate = 0.4
 
-//双点重组率
+//双点重组率 0.2 0.3
 var TwoPointRecombinationRate = 0.2
 
 //重组率
