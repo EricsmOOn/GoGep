@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/EricsmOOn/gep-go/chart"
 	"github.com/EricsmOOn/gep-go/gep"
+	"net/http"
 	"unsafe"
 )
 
@@ -32,6 +33,8 @@ func main() {
 				}
 				//展示图表
 				chart.PrintChart()
+				http.HandleFunc("/", chart.DrawChart)
+				http.ListenAndServe(":8087", nil)
 				return
 			}
 		}
