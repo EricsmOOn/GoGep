@@ -82,6 +82,7 @@
 
  ```
  # 进化图解
+ ![进化图解](https://github.com/EricsmOOn/gep-go/blob/master/pic/%E8%BF%9B%E5%8C%96%E8%AF%A6%E7%BB%86.png)
  ```
   进化统计图使用
   程序找到最优解后通过浏览器进入 http://localhost:8081/
