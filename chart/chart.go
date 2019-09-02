@@ -3,8 +3,10 @@ package chart
 import (
 	"fmt"
 	"github.com/EricsmOOn/gep-go/gep"
-	"github.com/wcharczuk/go-chart"
+	"github.com/chenjiandongx/go-echarts/charts"
+	"log"
 	"net/http"
+	"os"
 )
 
 var Max_fitness = make([]float64, 0)
@@ -20,6 +22,9 @@ func PrintChart() {
 }
 
 func GetChartData(genes []*gep.Gene) {
+	//if genes[0].Generation%100 != 0 {
+	//	return
+	//}
 	max := 0.0
 	sum := 0.0
 	for _, g := range genes {
@@ -33,39 +38,17 @@ func GetChartData(genes []*gep.Gene) {
 	X_value = append(X_value, float64(genes[0].Generation))
 }
 
-func DrawChart(res http.ResponseWriter, req *http.Request) {
-
-	graph := chart.Chart{
-		XAxis: chart.XAxis{
-			Style: chart.StyleShow(), //enables / displays the x-axis
-		},
-		YAxis: chart.YAxis{
-			Style: chart.StyleShow(), //enables / displays the y-axis
-		},
-		//Max
-		Series: []chart.Series{
-			chart.ContinuousSeries{
-				Style: chart.Style{
-					Show:        true,
-					StrokeColor: chart.GetDefaultColor(0).WithAlpha(64),
-					FillColor:   chart.GetDefaultColor(0).WithAlpha(64),
-				},
-				XValues: X_value,
-				YValues: Max_fitness,
-			},
-			//Ava
-			chart.ContinuousSeries{
-				Style: chart.Style{
-					Show:        true,
-					StrokeColor: chart.GetDefaultColor(0).WithAlpha(64),
-					FillColor:   chart.GetDefaultColor(0).WithAlpha(64),
-				},
-				XValues: X_value,
-				YValues: Ava_fitness,
-			},
-		},
+func Handler(w http.ResponseWriter, _ *http.Request) {
+	line := charts.NewLine()
+	line.SetGlobalOptions(charts.TitleOpts{Title: "进化详细"},
+		charts.ToolboxOpts{Show: true},
+		charts.YAxisOpts{Scale: true})
+	line.AddXAxis(X_value).
+		AddYAxis("每代最大适应度", Max_fitness, charts.LineOpts{Smooth: true}).
+		AddYAxis("每代平均适应度", Ava_fitness, charts.LineOpts{Smooth: true})
+	f, err := os.Create("result.html")
+	if err != nil {
+		log.Println(err)
 	}
-
-	res.Header().Set("Content-Type", "image/png")
-	graph.Render(chart.PNG, res)
+	line.Render(w, f) // Render 可接收多个 io.Writer 接口
 }

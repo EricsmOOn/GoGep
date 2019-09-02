@@ -74,30 +74,75 @@ func CreatGenes() []*Gene {
 }
 
 //个体遗传
-func Evolution(dad Gene, dads []*Gene) Gene {
+func Evolution(dads []*Gene) []*Gene {
+	sons := make([]*Gene, 0, PopulationsSize)
+	sons = Select(dads, sons)
+	return sons
+}
+
+//选择函数
+func Select(genes []*Gene, sons []*Gene) []*Gene {
+	//变异转盘赌
+	sons = Turn(genes, TurnNum, sons)
+	//变异精英
+	sons = Elite(genes, EliteNum, sons)
+	//不变异精英
+	sons = EliteNone(genes, NonEliteNum, sons)
+	return sons
+}
+
+//转盘赌
+func Turn(genes []*Gene, num int, sons []*Gene) []*Gene {
+	for i := 0; i < num; i++ {
+		fitness := float64(0)
+		for _, gene := range genes {
+			fitness += gene.Fitness
+		}
+		f := R.Float64() * fitness
+		detg := genes[0]
+		for _, gene := range genes {
+			f -= gene.Fitness
+			if f <= 0 {
+				detg = gene
+			}
+		}
+		sons = append(sons, Change(deepCopy(detg), genes))
+	}
+	return sons
+}
+
+//精英策略
+func Elite(genes []*Gene, num int, sons []*Gene) []*Gene {
+	for i := 0; i < num; i++ {
+		elite := genes[0]
+		for _, g := range genes {
+			if g.Fitness > elite.Fitness {
+				elite = g
+			}
+		}
+		sons = append(sons, Change(deepCopy(elite), genes))
+	}
+	return sons
+}
+
+//不变异精英策略
+func EliteNone(genes []*Gene, num int, sons []*Gene) []*Gene {
+	for i := 0; i < num; i++ {
+		elite := genes[0]
+		for _, g := range genes {
+			if g.Fitness > elite.Fitness {
+				elite = g
+			}
+		}
+		sons = append(sons, deepCopy(elite))
+	}
+	return sons
+}
+
+func deepCopy(dad *Gene) *Gene {
 	//深拷贝
 	genes := make([]byte, len(dad.Gene))
 	copy(genes, dad.Gene)
 	son := Gene{genes, make([][]byte, 0), 0, dad.Generation + 1}
-	//变异
-	Change(&son, dads)
-	//返回
-	return son
-}
-
-//转盘赌
-func Select(genes []*Gene) Gene {
-	fitness := float64(0)
-	for _, gene := range genes {
-		fitness += gene.Fitness
-	}
-	f := R.Float64() * fitness
-	for _, gene := range genes {
-		f -= gene.Fitness
-		if f <= 0 {
-			return *gene
-		}
-	}
-	fmt.Print("Error!")
-	return *genes[0]
+	return &son
 }

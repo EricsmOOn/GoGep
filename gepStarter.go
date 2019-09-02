@@ -11,43 +11,43 @@ import (
 func main() {
 
 	genes := gep.CreatGenes()
-	sons := make([]*gep.Gene, 0, gep.PopulationsSize)
 
 	for true {
 		//计算父代适应度
 		gep.CalculateFitness(genes)
-		//插入图标
+		//图表获取数据
 		chart.GetChartData(genes)
-		//显示自己
+		//显示每一代数据
 		//gep.PrintSelf(genes)
 		//终止条件
-		for _, i := range genes {
-			if i.Fitness > gep.ResultRang {
-				fmt.Printf("\n最优解:  %s\n", *(*string)(unsafe.Pointer(&i.Gene)))
-				fmt.Print("中缀式:  ")
-				for t := 0; t < gep.NumOfGenes; t++ {
-					fmt.Printf("%s", *(*string)(unsafe.Pointer(&i.InfixExpression[t])))
-					if t < gep.NumOfGenes-1 {
-						fmt.Print(string(gep.LinkFun))
-					}
-				}
-				//展示图表
-				chart.PrintChart()
-				http.HandleFunc("/", chart.DrawChart)
-				http.ListenAndServe(":8087", nil)
-				return
-			}
+		if isEnd(genes) {
+			//展示图表 http://localhost:8081/
+			http.HandleFunc("/", chart.Handler)
+			http.ListenAndServe(":8081", nil)
+			return
 		}
 		//进化
-		for i := 0; i < gep.PopulationsSize; i++ {
-			//选择进化
-			son := gep.Evolution(gep.Select(genes), genes)
-			//加入下一代
-			sons = append(sons, &son)
-		}
+		sons := gep.Evolution(genes)
 		//替换为父代
 		copy(genes, sons)
 		//清空子代
 		sons = sons[:0]
 	}
+}
+
+func isEnd(genes []*gep.Gene) bool {
+	for _, i := range genes {
+		if i.Fitness > gep.ResultRang {
+			fmt.Printf("\n最优解:  %s\n", *(*string)(unsafe.Pointer(&i.Gene)))
+			fmt.Print("中缀式:  ")
+			for t := 0; t < gep.NumOfGenes; t++ {
+				fmt.Printf("%s", *(*string)(unsafe.Pointer(&i.InfixExpression[t])))
+				if t < gep.NumOfGenes-1 {
+					fmt.Print(string(gep.LinkFun))
+				}
+			}
+			return true
+		}
+	}
+	return false
 }
