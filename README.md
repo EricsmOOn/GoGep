@@ -87,3 +87,5 @@
   程序找到最优解后通过浏览器进入 http://localhost:8081/
   * 显示进化中的适应度变化趋势
  ```
+# 致谢
+🌟超好用的Go语言图形库 [go-echarts](https://go-echarts.chenjiandongx.com)
