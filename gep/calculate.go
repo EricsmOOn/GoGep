@@ -2,6 +2,7 @@ package gep
 
 import (
 	"errors"
+	"github.com/EricsmOOn/gep-go/util/timer"
 	"math"
 	"strconv"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 //计算种群适应度
 func CalculateFitness(genes []*Gene) {
+	defer timer.TimeCount()()
 	for _, gene := range genes {
 
 		calculateFit(gene, GetInfixExpressions(*gene))

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/EricsmOOn/gep-go/chart"
 	"github.com/EricsmOOn/gep-go/gep"
+	"github.com/EricsmOOn/gep-go/util/timer"
 	"net/http"
 	"unsafe"
 )
@@ -24,6 +25,8 @@ func main() {
 			//展示图表 http://localhost:8081/
 			http.HandleFunc("/", chart.Handler)
 			http.ListenAndServe(":8081", nil)
+			//展示函数耗时情况
+			timer.PrintTimer()
 			return
 		}
 		//进化

@@ -75,6 +75,7 @@ func CreatGenes() []*Gene {
 
 //个体遗传
 func Evolution(dads []*Gene) []*Gene {
+	defer timer.TimeCount()()
 	sons := make([]*Gene, 0, PopulationsSize)
 	sons = Select(dads, sons)
 	return sons
