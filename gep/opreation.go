@@ -64,7 +64,7 @@ func isTerm(factor byte) bool {
 	return false
 }
 
-//获得个体中缀表达式
+//获得个体中缀表达式(逆波兰)
 func GetInfixExpressions(gene Gene) (k [][]byte) {
 	for i := 0; i < NumOfGenes; i++ {
 		k = append(k, GetInfixExpression(gene.Gene[i*GeneLength:(i+1)*GeneLength]))
@@ -72,28 +72,10 @@ func GetInfixExpressions(gene Gene) (k [][]byte) {
 	return k
 }
 
-//获得单个基因中缀表达式
+//获得单个基因中缀表达式(逆波兰)
 func GetInfixExpression(s []byte) []byte {
-	//将基因缩短为有效长度
 
-	si := 0
-	oi := 1
-
-	if isTerm(s[0]) {
-		s = s[:1]
-	}
-
-	for {
-		if si == oi && si != 0 {
-			break
-		}
-		if !isTerm(s[si]) {
-			oi += GetOperationFactorNum(s[si])
-		}
-		si++
-	}
-
-	s = s[:si]
+	s = GetEffectGene(s)
 
 	//用序号代表基因所在位置 用双向链表构建解码表达式 表示括号:-1->( -2->)
 	link := list.New()
@@ -152,6 +134,37 @@ func GetInfixExpression(s []byte) []byte {
 
 	//fmt.Println(*(*string)(unsafe.Pointer(&result)))
 	return result
+}
+
+//将基因缩短为有效长度
+func GetEffectGene(s []byte) []byte {
+	si := 0
+	oi := 1
+
+	if isTerm(s[0]) {
+		s = s[:1]
+	}
+
+	for {
+		if si == oi && si != 0 {
+			break
+		}
+		if !isTerm(s[si]) {
+			oi += GetOperationFactorNum(s[si])
+		}
+		si++
+	}
+
+	s = s[:si]
+	return s
+}
+
+//获得个体最简表达式
+func GetEffectGenes(gene Gene) (k [][]byte) {
+	for i := 0; i < NumOfGenes; i++ {
+		k = append(k, GetEffectGene(gene.Gene[i*GeneLength:(i+1)*GeneLength]))
+	}
+	return k
 }
 
 //寻找双向链表的节点

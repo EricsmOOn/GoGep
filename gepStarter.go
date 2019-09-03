@@ -2,10 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/EricsmOOn/gep-go/chart"
 	"github.com/EricsmOOn/gep-go/gep"
-	"github.com/EricsmOOn/gep-go/util/timer"
-	"net/http"
 	"unsafe"
 )
 
@@ -15,18 +12,20 @@ func main() {
 
 	for true {
 		//计算父代适应度
-		gep.CalculateFitness(genes)
+		gep.CalculateFitnessOpt(genes)
+		//计算父代适应度(逆波兰) 优化 - 10倍 速度
+		//gep.CalculateFitness(genes)
 		//图表获取数据
-		chart.GetChartData(genes)
+		//chart.GetChartData(genes)
 		//显示每一代数据
-		//gep.PrintSelf(genes)
+		gep.PrintSelf(genes)
 		//终止条件
 		if isEnd(genes) {
-			//展示图表 http://localhost:8081/
-			http.HandleFunc("/", chart.Handler)
-			http.ListenAndServe(":8081", nil)
 			//展示函数耗时情况
-			timer.PrintTimer()
+			//timer.PrintTimer()
+			//展示图表 http://localhost:8081/
+			//http.HandleFunc("/", chart.Handler)
+			//http.ListenAndServe(":8081", nil)
 			return
 		}
 		//进化
@@ -41,14 +40,16 @@ func main() {
 func isEnd(genes []*gep.Gene) bool {
 	for _, i := range genes {
 		if i.Fitness > gep.ResultRang {
+			gep.CalculateFit(i, gep.GetInfixExpressions(*i))
 			fmt.Printf("\n最优解:  %s\n", *(*string)(unsafe.Pointer(&i.Gene)))
 			fmt.Print("中缀式:  ")
 			for t := 0; t < gep.NumOfGenes; t++ {
 				fmt.Printf("%s", *(*string)(unsafe.Pointer(&i.InfixExpression[t])))
 				if t < gep.NumOfGenes-1 {
-					fmt.Print(string(gep.LinkFun))
+					fmt.Printf(string(gep.LinkFun))
 				}
 			}
+			fmt.Println()
 			return true
 		}
 	}

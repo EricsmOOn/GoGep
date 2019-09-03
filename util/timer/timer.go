@@ -30,6 +30,7 @@ func TimeCount() func() {
 }
 
 func PrintTimer() {
+	fmt.Println("\n各函数耗时统计:")
 	for k, v := range funcName {
 		fmt.Printf("%10s - %.5fs\n", k, v)
 	}
