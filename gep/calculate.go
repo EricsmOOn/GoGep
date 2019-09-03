@@ -23,7 +23,11 @@ func calculateFitOpt(gene *Gene, easyEquation [][]byte) {
 	for _, td := range testData {
 		//逐个读入测试数据
 		//求表达 result
-		result := calculatePerFitOpt(easyEquation, td.TermVarSet)
+		result, err := calculatePerFitOpt(easyEquation, td.TermVarSet)
+		//杀死非法表达式
+		if err == nil {
+			gene.Fitness = 0
+		}
 		fi := SelectRang - math.Abs(result-td.Result)
 		if fi > 0 {
 			fsum += fi
@@ -33,7 +37,7 @@ func calculateFitOpt(gene *Gene, easyEquation [][]byte) {
 }
 
 //计算个体对一组数据的适应度
-func calculatePerFitOpt(g [][]byte, v []float64) float64 {
+func calculatePerFitOpt(g [][]byte, v []float64) (float64, error) {
 	var result float64
 	for i := 0; i < len(g); i++ {
 		//拼接个体的几个基因到 slice
@@ -58,7 +62,7 @@ func calculatePerFitOpt(g [][]byte, v []float64) float64 {
 		//计算
 		f, e := calculateOpt(slice)
 		if e != nil {
-			return 0
+			return 0, e
 		}
 		//连接函数
 		switch LinkFun {
@@ -72,7 +76,7 @@ func calculatePerFitOpt(g [][]byte, v []float64) float64 {
 			result = result / f
 		}
 	}
-	return result
+	return result, nil
 }
 
 //求个体对一条样例的适应度

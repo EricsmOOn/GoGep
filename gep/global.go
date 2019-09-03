@@ -4,13 +4,13 @@ package gep
 var HeadLength = 7
 
 //基因产生个数 20 30
-var PopulationsSize = 20
+var PopulationsSize = 100
 
 //选择范围
-var SelectRang = float64(100)
+var SelectRang float64 = 1000
 
 //选择精度
-var Precision = 0.01
+var Precision float64 = 0
 
 //染色体含有基因数 3 4
 var NumOfGenes = 3
@@ -22,16 +22,19 @@ var LinkFun = byte('+')
 var FunSet = []byte{'+', '-', '*', '/'}
 
 //终点集
-var TermSet = []byte{'a'}
+var TermSet = []byte{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'}
 
 //直接变异率 0.144 0.0385
-var DcMutationRate = 0.144
+var DcMutationRate = 0.0385
+
+//动态变异直接变异率
+var DynamicDcMutationRate = 1.0
 
 //单点重组率 0.4 0.3
-var OnePointRecombinationRate = 0.4
+var OnePointRecombinationRate = 0.3
 
 //双点重组率 0.2 0.3
-var TwoPointRecombinationRate = 0.2
+var TwoPointRecombinationRate = 0.3
 
 //重组率
 var RecombinationRate = 0.1
@@ -65,10 +68,10 @@ var ResultRang = SelectRang*float64(GetDataNum()) - Precision
 
 //注意此处参数 TurnNum 不可为负数
 //精英策略个数
-var EliteNum = 2
+var EliteNum = 0
 
 //不变异精英策略个数
-var NonEliteNum = 1
+var NonEliteNum = 5
 
 //转盘赌个数
 var TurnNum = PopulationsSize - EliteNum - NonEliteNum

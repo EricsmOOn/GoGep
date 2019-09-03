@@ -1,7 +1,8 @@
 package gep
 
 func Change(gene *Gene, genes []*Gene) *Gene {
-	mutation(gene)
+	//mutation(gene)
+	dynamicMutation(gene, genes)
 	isTansposition(gene)
 	risTansposition(gene)
 	geneTransposition(gene)
@@ -14,6 +15,41 @@ func Change(gene *Gene, genes []*Gene) *Gene {
 func mutation(gene *Gene) *Gene {
 	set := append(FunSet, TermSet...)
 	if R.Float64() < DcMutationRate {
+		intn := R.Intn(len(gene.Gene))
+		if intn%GeneLength < HeadLength {
+			gene.Gene[intn] = set[R.Intn(len(set))]
+		} else {
+			gene.Gene[intn] = TermSet[R.Intn(len(TermSet))]
+		}
+	}
+	return gene
+}
+
+func dynamicMutation(gene *Gene, genes []*Gene) *Gene {
+	max := 0.0
+	sum := 0.0
+	rate := 0.0
+	for _, g := range genes {
+		sum += g.Fitness
+		if g.Fitness > max {
+			max = g.Fitness
+		}
+	}
+	avg := sum / float64(len(genes))
+	f := gene.Fitness
+	if f > avg {
+		rate = (max - f) / (max - avg)
+	} else {
+		rate = 1.0
+	}
+
+	d := DynamicDcMutationRate
+	//rate += (1 - rate) * (avg / max)
+
+	d = d * rate
+
+	set := append(FunSet, TermSet...)
+	if R.Float64() < d {
 		intn := R.Intn(len(gene.Gene))
 		if intn%GeneLength < HeadLength {
 			gene.Gene[intn] = set[R.Intn(len(set))]

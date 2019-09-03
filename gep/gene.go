@@ -20,7 +20,7 @@ type Gene struct {
 func PrintSelf(genes []*Gene) {
 	fmt.Printf("Generation - [%3d]\n", genes[0].Generation)
 	for n, gene := range genes {
-		fmt.Printf("%s - [%2d] = %.4f \n", *(*string)(unsafe.Pointer(&gene.Gene)), n, gene.Fitness) //高效转换byte到String
+		fmt.Printf("%s - [%6d] = %.4f \n", *(*string)(unsafe.Pointer(&gene.Gene)), n, gene.Fitness) //高效转换byte到String
 
 		////显示中缀表达式
 		//k := gene.InfixExpression
@@ -33,7 +33,45 @@ func PrintSelf(genes []*Gene) {
 		//fmt.Println()
 
 	}
+}
 
+//显示最大适应度
+func PrintSelfEasy(genes []*Gene) {
+	g := genes[0]
+	for _, i := range genes {
+		if i.Fitness > g.Fitness {
+			g = i
+		}
+	}
+	fmt.Printf("[%6d] - [%s] - [%.4f]\n", g.Generation, *(*string)(unsafe.Pointer(&g.Gene)), g.Fitness)
+	////中缀式子
+	//CalculateFit(g, GetInfixExpressions(*g))
+	//fmt.Print(" - [ ")
+	//for t := 0; t < NumOfGenes; t++ {
+	//	fmt.Printf("%s", *(*string)(unsafe.Pointer(&g.InfixExpression[t])))
+	//	if t < NumOfGenes-1 {
+	//		fmt.Printf(" %s ", string(LinkFun))
+	//	}
+	//}
+	//fmt.Println(" ]")
+}
+
+var MaxFitness float64 = 0
+
+//显示最大适应度
+func PrintMostEasy(genes []*Gene) {
+	g := genes[0]
+	flag := false
+	for _, i := range genes {
+		if i.Fitness > MaxFitness {
+			MaxFitness = i.Fitness
+			g = i
+			flag = true
+		}
+	}
+	if flag {
+		fmt.Printf("[%6d] - [%s] - [%.4f]\n", g.Generation, *(*string)(unsafe.Pointer(&g.Gene)), g.Fitness)
+	}
 }
 
 //随机创建个体
