@@ -47,7 +47,7 @@ var PopulationsSize = 100
 var SelectRang float64 = 1000
 
 //选择精度
-var Precision float64 = 900
+var Precision float64 = 800
 
 //染色体含有基因数 3 4
 var NumOfGenes = 3
