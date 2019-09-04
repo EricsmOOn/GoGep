@@ -32,7 +32,7 @@ var ChartPort = 8081
 var ChartInterval = 0
 
 //最高运行代数 0 - 不限制
-var MaxGenerations = 0
+var MaxGenerations = 5000
 
 //函数计时器开关
 var FuncTimer = false

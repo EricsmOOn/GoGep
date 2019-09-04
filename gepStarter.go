@@ -6,11 +6,9 @@ import (
 	"github.com/EricsmOOn/gep-go/gep"
 	"github.com/EricsmOOn/gep-go/util/timer"
 	"net/http"
-	"time"
 )
 
 func main() {
-	start := time.Now()
 
 	genes := gep.CreateGenes()
 
@@ -48,7 +46,6 @@ func main() {
 					fmt.Print(e.Error())
 				}
 			}
-			fmt.Print(time.Since(start))
 			return
 		}
 		//进化
