@@ -2,91 +2,88 @@
  💡 **用Golang实现的GEP *[基因表达式编程]* 算法**
 # 数据集
 
-[testData.go文件](https://github.com/EricsmOOn/gep-go/blob/master/gep/testData.go)
+ℹ️ Todo
 
 # 参数列表
- ```
- global.go
 
- //头部长度
- var HeadLength
+## 运行参数配置
+```
+ViewStyle - 控制台输出方式(Detailed - 详细,Simple - 简略,Simplest - 最简略)
 
- //基因产生个数
- var PopulationsSize
+Chart - 图表开关
 
- //选择范围
- var SelectRang
+ChartPort - 图表展示端口号
 
- //选择精度
- var Precision
+ChartInterval - 图表记录跨度(0 - 每次变异触发记录)
 
- //染色体含有基因数
- var NumOfGenes
+MaxGenerations - 最高运行代数(0 - 不限制)
 
- //连接函数
- var LinkFun
+FuncTimer - 函数计时器开关
+```
 
- //函数集
- var FunSet
+## GEP基本参数配置
+```
+HeadLength - 头部长度
 
- //终点集
- var TermSet
+PopulationsSize - 基因产生个数
 
- //直接变异率
- var DcMutationRate
+SelectRang - 选择范围
 
- //单点重组率
- var OnePointRecombinationRate
+Precision - 选择精度
 
- //双点重组率
- var TwoPointRecombinationRate
+NumOfGenes - 每条染色体含有基因数
 
- //重组率
- var RecombinationRate
+LinkFun - 连接函数('+', '-', '*', '/')
 
- //插入转座率
- var ISTranspositionRate
+FunSet - 函数集{'+', '-', '*', '/'}
 
- //插入转座元素长度
- var ISElementsLength
+TermSet - 终点集(默认根据数据集自动生成)
 
- //根转座率
- var RISTranspositionRate
+DcMutationRate - 直接变异率
 
- //根转座元素长度
- var RISElementsLength
+OnePointRecombinationRate - 单点重组率
 
- //转座概率
- var GeneTranspositionRate
+TwoPointRecombinationRate - 双点重组率
 
- //最大操作数(参数个数)
- var MaxFactorNum
+RecombinationRate - 基因重组率
 
- //基因尾部长度
- var TailLength
+ISTranspositionRate - 插入转座率
 
- //基因长度
- var GeneLength
+ISElementsLength - 插入转座元素长度
 
- //选择结果
- var ResultRang
+RISTranspositionRate - 根转座率
 
- //精英策略个数
- var EliteNum
+RISElementsLength - 根转座元素长度
 
- //不变异精英策略个数
- var NonEliteNum
+GeneTranspositionRate - 基因转座概率
 
- //转盘赌个数
- var TurnNum
+MaxFactorNum - 最大操作数(默认根据函数集自动生成)
 
- ```
- # 进化图解
+TailLength - 基因尾部长度(默认根据头部长度自动生成)
+
+GeneLength - 基因长度(默认根据头部长度自动生成)
+
+ResultRang - 选择结果(默认根据选择范围、数据集数据个数、选择精度自动生成)
+```
+
+## 高阶GEP参数配置
+```
+DynamicDcMutation - 自适应变异开关
+
+DynamicDcMutationRate - 自适应变异率基数
+
+EliteNum - 精英策略个数
+
+NonEliteNum - 不变异精英策略个数
+
+TurnNum = 转盘赌个数(默认根据EliteNum、NonEliteNum自动生成)
+```
+
+# 进化图解
  ![进化图解](https://github.com/EricsmOOn/gep-go/blob/master/pic/%E8%BF%9B%E5%8C%96%E8%AF%A6%E7%BB%86.png)
  ```
-  进化统计图使用
-  程序找到最优解后通过浏览器进入 http://localhost:8081/
-  * 显示进化中的适应度变化趋势
+  1. 设置运行参数 Chart = Open ,根据情况调整 ChartPort、ChartInterval 。
+  2. 程序找到最优解后通过浏览器进入 http://localhost:ChartPort/
  ```
 # 致谢
 🌟超好用的Go语言图形库 [go-echarts](https://go-echarts.chenjiandongx.com)
