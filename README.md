@@ -1,5 +1,9 @@
 # gep-go
- 💡 **用Golang实现的GEP *[基因表达式编程]* 算法**
+   [![Build Status](https://travis-ci.org/EricsmOOn/gep-go.svg?branch=master)](https://travis-ci.org/EricsmOOn/gep-go) [![Go Report Card](https://goreportcard.com/badge/github.com/EricsmOOn/gep-go)](https://goreportcard.com/report/github.com/EricsmOOn/gep-go)
+ 
+💡 **用Golang实现的GEP *[基因表达式编程]* 算法**
+
+GEP(Gene Expression Programming,基因表达式编程) —— 通过人工智能建立的数学模型。这是一种新的进化算法，它可以进化诸如数学表达式、神经网络、决策树、多项式构建、逻辑表达式等多种形态的计算机程序。在过去的科研成果中，该技术已被用于公式发现、函数挖掘、关联规则挖掘、因子分解、太阳黑子预测，并且取得了满意的效果。
 # 数据集
 
 ℹ️ Todo
