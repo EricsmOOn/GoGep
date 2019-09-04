@@ -1,7 +1,6 @@
 package chart
 
 import (
-	"fmt"
 	"github.com/EricsmOOn/gep-go/gep"
 	"github.com/chenjiandongx/go-echarts/charts"
 	"log"
@@ -9,41 +8,49 @@ import (
 	"os"
 )
 
-var Max_fitness = make([]float64, 0)
+var MaxFitness = make([]float64, 0)
 
-var Ava_fitness = make([]float64, 0)
+var AvaFitness = make([]float64, 0)
 
-//var Min_fitness = make([]float64, 0)
+var XValue = make([]float64, 0)
 
-var X_value = make([]float64, 0)
-
-func PrintChart() {
-	fmt.Println()
-	fmt.Println(Max_fitness)
-	fmt.Println(Ava_fitness)
-	//fmt.Println(Min_fitness)
-}
+var MaxPrinter = 0.0
 
 func GetChartData(genes []*gep.Gene) {
-	//if genes[0].Generation%100 != 0 {
-	//	return
-	//}
-	max := 0.0
-	//min := genes[0].Fitness
-	sum := 0.0
-	for _, g := range genes {
-		sum += g.Fitness
-		if g.Fitness > max {
-			max = g.Fitness
+	interval := 1
+	if gep.ChartInterval == 0 {
+		max := 0.0
+		sum := 0.0
+		for _, g := range genes {
+			sum += g.Fitness
+			if g.Fitness > max {
+				max = g.Fitness
+			}
 		}
-		//if g.Fitness < min {
-		//	min = g.Fitness
-		//}
+		if max > MaxPrinter {
+			MaxPrinter = max
+			MaxFitness = append(MaxFitness, max)
+			AvaFitness = append(AvaFitness, sum/(float64(len(genes))))
+			XValue = append(XValue, float64(genes[0].Generation))
+		}
+		return
+	} else {
+		interval = gep.ChartInterval
 	}
-	Max_fitness = append(Max_fitness, max)
-	//Min_fitness = append(Min_fitness, min)
-	Ava_fitness = append(Ava_fitness, sum/(float64(len(genes))))
-	X_value = append(X_value, float64(genes[0].Generation))
+	if genes[0].Generation%interval == 0 {
+		max := 0.0
+		sum := 0.0
+		for _, g := range genes {
+			sum += g.Fitness
+			if g.Fitness > max {
+				max = g.Fitness
+			}
+		}
+		MaxFitness = append(MaxFitness, max)
+		AvaFitness = append(AvaFitness, sum/(float64(len(genes))))
+		XValue = append(XValue, float64(genes[0].Generation))
+	}
+	return
 }
 
 func Handler(w http.ResponseWriter, _ *http.Request) {
@@ -51,10 +58,9 @@ func Handler(w http.ResponseWriter, _ *http.Request) {
 	line.SetGlobalOptions(charts.TitleOpts{Title: "进化详细"},
 		charts.ToolboxOpts{Show: true},
 		charts.YAxisOpts{Scale: true})
-	line.AddXAxis(X_value).
-		AddYAxis("每代最大适应度", Max_fitness, charts.LineOpts{Smooth: true}).
-		AddYAxis("每代平均适应度", Ava_fitness, charts.LineOpts{Smooth: true})
-		//AddYAxis("每代最小适应度", Min_fitness, charts.LineOpts{Smooth: true})
+	line.AddXAxis(XValue).
+		AddYAxis("每代最大适应度", MaxFitness, charts.LineOpts{Smooth: true}).
+		AddYAxis("每代平均适应度", AvaFitness, charts.LineOpts{Smooth: true})
 	f, err := os.Create("result.html")
 	if err != nil {
 		log.Println(err)

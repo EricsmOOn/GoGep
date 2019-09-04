@@ -24,24 +24,6 @@ func GetOperationFactorNum(operationName byte) int {
 	return num
 }
 
-//获得函数优先级
-func GetOperationPriority(operationName byte) int {
-	priority := -1
-	switch operationName {
-	case '+', '-':
-		priority = 4
-	case '*', '/', '%':
-		priority = 3
-	case '(':
-		priority = 0
-	case 'Q', 'N':
-		priority = 6
-	default:
-		priority = -1
-	}
-	return priority
-}
-
 //获得函数集最大参数个数
 func GetMaxFactorNum() int {
 	maxNum := 0
@@ -64,7 +46,7 @@ func isTerm(factor byte) bool {
 	return false
 }
 
-//获得个体中缀表达式(逆波兰)
+//获得个体中缀表达式
 func GetInfixExpressions(gene Gene) (k [][]byte) {
 	for i := 0; i < NumOfGenes; i++ {
 		k = append(k, GetInfixExpression(gene.Gene[i*GeneLength:(i+1)*GeneLength]))
@@ -72,7 +54,7 @@ func GetInfixExpressions(gene Gene) (k [][]byte) {
 	return k
 }
 
-//获得单个基因中缀表达式(逆波兰)
+//获得单个基因中缀表达式
 func GetInfixExpression(s []byte) []byte {
 
 	s = GetEffectGene(s)
@@ -132,8 +114,19 @@ func GetInfixExpression(s []byte) []byte {
 		f = f.Next()
 	}
 
-	//fmt.Println(*(*string)(unsafe.Pointer(&result)))
 	return result
+}
+
+//寻找双向链表的节点
+func search(link *list.List, aim int) *list.Element {
+	f := link.Front()
+	for i := link.Len(); i > 0; i-- {
+		if f.Value.(int) == aim {
+			return f
+		}
+		f = f.Next()
+	}
+	return f
 }
 
 //将基因缩短为有效长度
@@ -165,16 +158,4 @@ func GetEffectGenes(gene Gene) (k [][]byte) {
 		k = append(k, GetEffectGene(gene.Gene[i*GeneLength:(i+1)*GeneLength]))
 	}
 	return k
-}
-
-//寻找双向链表的节点
-func search(link *list.List, aim int) *list.Element {
-	f := link.Front()
-	for i := link.Len(); i > 0; i-- {
-		if f.Value.(int) == aim {
-			return f
-		}
-		f = f.Next()
-	}
-	return f
 }

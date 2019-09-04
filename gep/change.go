@@ -1,8 +1,11 @@
 package gep
 
 func Change(gene *Gene, genes []*Gene) *Gene {
-	//mutation(gene)
-	dynamicMutation(gene, genes)
+	if DynamicDcMutation {
+		dynamicMutation(gene, genes)
+	} else {
+		mutation(gene)
+	}
 	isTansposition(gene)
 	risTansposition(gene)
 	geneTransposition(gene)
@@ -13,6 +16,9 @@ func Change(gene *Gene, genes []*Gene) *Gene {
 }
 
 func mutation(gene *Gene) *Gene {
+	//if FuncTimer {
+	//	defer timer.TimeCount()()
+	//}
 	set := append(FunSet, TermSet...)
 	if R.Float64() < DcMutationRate {
 		intn := R.Intn(len(gene.Gene))
@@ -26,6 +32,9 @@ func mutation(gene *Gene) *Gene {
 }
 
 func dynamicMutation(gene *Gene, genes []*Gene) *Gene {
+	//if FuncTimer {
+	//	defer timer.TimeCount()()
+	//}
 	max := 0.0
 	sum := 0.0
 	rate := 0.0
@@ -61,6 +70,9 @@ func dynamicMutation(gene *Gene, genes []*Gene) *Gene {
 }
 
 func onePointRecombination(gene *Gene, genes []*Gene) *Gene {
+	//if FuncTimer {
+	//	defer timer.TimeCount()()
+	//}
 	if R.Float64() > OnePointRecombinationRate {
 		return gene
 	}
@@ -74,6 +86,9 @@ func onePointRecombination(gene *Gene, genes []*Gene) *Gene {
 }
 
 func twoPointRecombination(gene *Gene, genes []*Gene) *Gene {
+	//if FuncTimer {
+	//	defer timer.TimeCount()()
+	//}
 	if R.Float64() > TwoPointRecombinationRate {
 		return gene
 	}
@@ -92,6 +107,9 @@ func twoPointRecombination(gene *Gene, genes []*Gene) *Gene {
 }
 
 func geneRecombination(gene *Gene, genes []*Gene) *Gene {
+	//if FuncTimer {
+	//	defer timer.TimeCount()()
+	//}
 	if R.Float64() > RecombinationRate {
 		return gene
 	}
@@ -111,6 +129,9 @@ func geneRecombination(gene *Gene, genes []*Gene) *Gene {
 }
 
 func isTansposition(gene *Gene) *Gene {
+	//if FuncTimer {
+	//	defer timer.TimeCount()()
+	//}
 	if R.Float64() > ISTranspositionRate {
 		return gene
 	}
@@ -132,6 +153,9 @@ func isTansposition(gene *Gene) *Gene {
 }
 
 func risTansposition(gene *Gene) *Gene {
+	//if FuncTimer {
+	//	defer timer.TimeCount()()
+	//}
 	if R.Float64() > RISTranspositionRate {
 		return gene
 	}
@@ -161,6 +185,9 @@ func risTansposition(gene *Gene) *Gene {
 }
 
 func geneTransposition(gene *Gene) *Gene {
+	//if FuncTimer {
+	//	defer timer.TimeCount()()
+	//}
 	if R.Float64() > GeneTranspositionRate {
 		return gene
 	}

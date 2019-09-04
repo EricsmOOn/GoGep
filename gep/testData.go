@@ -5,6 +5,8 @@ type TestData struct {
 	Result     float64
 }
 
+var td []TestData
+
 var sunspots = []float64{
 	101, 82, 66, 35, 31, 7, 20, 92,
 	154, 125, 85, 68, 38, 23, 10, 24,
@@ -59,16 +61,22 @@ var sunspots = []float64{
 
 //太阳黑子
 func ReadTestData() []TestData {
-	td := make([]TestData, 0)
-	for i := 0; i < 90; i++ {
-		td = append(td, TestData{sunspots[i : i+10], sunspots[i+10]})
+	if td == nil {
+		td = make([]TestData, 0)
+		for i := 0; i < 90; i++ {
+			td = append(td, TestData{sunspots[i : i+10], sunspots[i+10]})
+		}
+		return td
 	}
 	return td
 }
 
+func GetVarSetNum() int {
+	data := ReadTestData()
+	return len(data[0].TermVarSet)
+}
+
 func GetDataNum() int {
-	//太阳黑子
-	//return 90
 	data := ReadTestData()
 	return len(data)
 }
