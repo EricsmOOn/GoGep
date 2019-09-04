@@ -6,17 +6,18 @@ import (
 	"github.com/EricsmOOn/gep-go/gep"
 	"github.com/EricsmOOn/gep-go/util/timer"
 	"net/http"
+	"time"
 )
 
 func main() {
+	start := time.Now()
 
 	genes := gep.CreateGenes()
 
 	for true {
 		//计算父代适应度
 		gep.CalculateFitnessOpt(genes)
-		//计算父代适应度(逆波兰) 优化 - 10倍 速度
-		//gep.CalculateFitness(genes)
+		gep.Wg.Wait()
 		//图表获取数据
 		if gep.Chart {
 			chart.GetChartData(genes)
@@ -47,6 +48,7 @@ func main() {
 					fmt.Print(e.Error())
 				}
 			}
+			fmt.Print(time.Since(start))
 			return
 		}
 		//进化

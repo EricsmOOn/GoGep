@@ -23,7 +23,7 @@ var TermSetAll = []byte{
 var ViewStyle = Simplest
 
 //开启图表
-var Chart = Open
+var Chart = Close
 
 //图表端口
 var ChartPort = 8081
@@ -116,7 +116,7 @@ var DynamicDcMutationRate = 1.0
 var EliteNum = 0
 
 //不变异精英策略个数
-var NonEliteNum = 5
+var NonEliteNum = 4
 
 //转盘赌个数
 var TurnNum = PopulationsSize - EliteNum - NonEliteNum

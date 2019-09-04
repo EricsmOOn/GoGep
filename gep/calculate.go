@@ -3,17 +3,22 @@ package gep
 import (
 	"errors"
 	"math"
+	"sync"
 )
+
+var Wg sync.WaitGroup
 
 //计算种群适应度
 func CalculateFitnessOpt(genes []*Gene) {
 	for _, gene := range genes {
-		calculateFitOpt(gene, GetEffectGenes(*gene))
+		Wg.Add(1)
+		go calculateFitOpt(gene, GetEffectGenes(*gene))
 	}
 }
 
 //简化式子后计算个体适应度
 func calculateFitOpt(gene *Gene, easyEquation [][]byte) {
+	defer Wg.Done()
 	testData := ReadTestData()
 	fsum := 0.0
 	for _, td := range testData {
