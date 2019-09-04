@@ -22,8 +22,11 @@ var TermSetAll = []byte{
 //控制台输出方式 Detailed - 详细,Simple - 简略,Simplest - 最简略
 var ViewStyle = Simplest
 
-//开启图表 浏览器登陆 http://localhost:8081/ 查看变异详情
+//开启图表
 var Chart = Open
+
+//图表端口
+var ChartPort = 8081
 
 //图表记录跨度 0为每次变异记录
 var ChartInterval = 0

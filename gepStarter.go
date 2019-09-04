@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/EricsmOOn/gep-go/chart"
 	"github.com/EricsmOOn/gep-go/gep"
 	"github.com/EricsmOOn/gep-go/util/timer"
@@ -41,7 +42,10 @@ func main() {
 			//展示图表 http://localhost:8081/
 			if gep.Chart {
 				http.HandleFunc("/", chart.Handler)
-				http.ListenAndServe(":8081", nil)
+				e := http.ListenAndServe(":"+string(gep.ChartPort), nil)
+				if e != nil {
+					fmt.Print(e.Error())
+				}
 			}
 			return
 		}
