@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"github.com/EricsmOOn/gep-go/chart"
 	"github.com/EricsmOOn/gep-go/gep"
-	"github.com/EricsmOOn/gep-go/util/timer"
 	"net/http"
 )
 
 func main() {
 
+	//读取数据集
+	gep.InitTestData()
+	//初始化种群
 	genes := gep.CreateGenes()
 
 	for true {
@@ -34,11 +36,7 @@ func main() {
 		}
 		//终止条件(genes,最大运行代数(可选))
 		if isEnd(genes, gep.MaxGenerations) {
-			//展示函数耗时情况
-			if gep.FuncTimer {
-				timer.PrintTimer()
-			}
-			//展示图表 http://localhost:8081/
+			//展示图表
 			if gep.Chart {
 				http.HandleFunc("/", chart.Handler)
 				e := http.ListenAndServe(":"+string(gep.ChartPort), nil)

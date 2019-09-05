@@ -19,6 +19,9 @@ var TermSetAll = []byte{
 /*
 	运行参数配置
 */
+//CSV文件名称(请放置于根目录下)
+var CsvFileName = "sunspots.csv"
+
 //控制台输出方式 Detailed - 详细,Simple - 简略,Simplest - 最简略
 var ViewStyle = Simplest
 
@@ -33,9 +36,6 @@ var ChartInterval = 0
 
 //最高运行代数 0 - 不限制
 var MaxGenerations = 5000
-
-//函数计时器开关
-var FuncTimer = false
 
 /*
 	GEP参数配置
@@ -62,7 +62,7 @@ var LinkFun = byte('+')
 var FunSet = []byte{'+', '-', '*', '/'}
 
 //终点集
-var TermSet = TermSetAll[:GetVarSetNum()]
+var TermSet = TermSetAll
 
 //直接变异率 0.144 0.0385
 var DcMutationRate = 0.0385
@@ -101,7 +101,7 @@ var TailLength = HeadLength*(MaxFactorNum-1) + 1
 var GeneLength = HeadLength + TailLength
 
 //选择结果
-var ResultRang = SelectRang*float64(GetDataNum()) - Precision
+var ResultRang = 0.0
 
 /*
 	高阶GEP参数配置
