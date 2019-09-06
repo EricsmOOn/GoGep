@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/EricsmOOn/gep-go/chart"
-	"github.com/EricsmOOn/gep-go/gep"
+	"github.com/EricsmOOn/GoGep/chart"
+	"github.com/EricsmOOn/GoGep/gep"
 	"net/http"
 )
 
@@ -14,7 +14,7 @@ func main() {
 	//初始化种群
 	genes := gep.CreateGenes()
 
-	for true {
+	for {
 		//计算父代适应度
 		gep.CalculateFitnessOpt(genes)
 		gep.Wg.Wait()
@@ -50,8 +50,6 @@ func main() {
 		sons := gep.Evolution(genes)
 		//替换为父代
 		copy(genes, sons)
-		//清空子代
-		sons = sons[:0]
 	}
 }
 

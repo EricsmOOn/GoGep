@@ -6,8 +6,8 @@ func Change(gene *Gene, genes []*Gene) *Gene {
 	} else {
 		mutation(gene)
 	}
-	isTansposition(gene)
-	risTansposition(gene)
+	isTransposition(gene)
+	risTransposition(gene)
 	geneTransposition(gene)
 	onePointRecombination(gene, genes)
 	twoPointRecombination(gene, genes)
@@ -128,10 +128,7 @@ func geneRecombination(gene *Gene, genes []*Gene) *Gene {
 	return gene
 }
 
-func isTansposition(gene *Gene) *Gene {
-	//if FuncTimer {
-	//	defer timer.TimeCount()()
-	//}
+func isTransposition(gene *Gene) *Gene {
 	if R.Float64() > ISTranspositionRate {
 		return gene
 	}
@@ -145,14 +142,14 @@ func isTansposition(gene *Gene) *Gene {
 	pos := num*GeneLength + R.Intn(GeneLength-ISElementsLength)
 	end := pos + ISElementsLength
 
-	orgt := org[:destPos]
-	orgt = append(orgt, gene.Gene[pos:end]...)
-	gene.Gene = append(org[:num*GeneLength+HeadLength], gene.Gene[num*GeneLength+HeadLength:]...)
+	orgTemp := org[:destPos]
+	orgTemp = append(orgTemp, gene.Gene[pos:end]...)
+	gene.Gene = append(orgTemp[:num*GeneLength+HeadLength], gene.Gene[num*GeneLength+HeadLength:]...)
 
 	return gene
 }
 
-func risTansposition(gene *Gene) *Gene {
+func risTransposition(gene *Gene) *Gene {
 	//if FuncTimer {
 	//	defer timer.TimeCount()()
 	//}
@@ -168,13 +165,13 @@ func risTansposition(gene *Gene) *Gene {
 	destPos := num * GeneLength
 
 	for i := 0; i < 20; i++ {
-		pos := num*GeneLength + R.Intn(GeneLength-ISElementsLength)
+		pos := num*GeneLength + R.Intn(GeneLength-RISElementsLength)
 		for _, k := range FunSet {
 			if org[pos] == k {
 				end := pos + RISElementsLength
-				orgt := org[:destPos]
-				orgt = append(orgt, gene.Gene[pos:end]...)
-				gene.Gene = append(org[:num*GeneLength+HeadLength], gene.Gene[num*GeneLength+HeadLength:]...)
+				orgTemp := org[:destPos]
+				orgTemp = append(orgTemp, gene.Gene[pos:end]...)
+				gene.Gene = append(orgTemp[:num*GeneLength+HeadLength], gene.Gene[num*GeneLength+HeadLength:]...)
 
 				return gene
 			}

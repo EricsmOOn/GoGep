@@ -1,7 +1,7 @@
 package chart
 
 import (
-	"github.com/EricsmOOn/gep-go/gep"
+	"github.com/EricsmOOn/GoGep/gep"
 	"github.com/chenjiandongx/go-echarts/charts"
 	"log"
 	"net/http"
@@ -17,7 +17,7 @@ var XValue = make([]float64, 0)
 var MaxPrinter = 0.0
 
 func GetChartData(genes []*gep.Gene) {
-	interval := 1
+	var interval int
 	if gep.ChartInterval == 0 {
 		max := 0.0
 		sum := 0.0
@@ -50,7 +50,6 @@ func GetChartData(genes []*gep.Gene) {
 		AvaFitness = append(AvaFitness, sum/(float64(len(genes))))
 		XValue = append(XValue, float64(genes[0].Generation))
 	}
-	return
 }
 
 func Handler(w http.ResponseWriter, _ *http.Request) {
@@ -72,5 +71,8 @@ func Handler(w http.ResponseWriter, _ *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-	line.Render(w, f) // Render 可接收多个 io.Writer 接口
+	err = line.Render(w, f) // Render 可接收多个 io.Writer 接口
+	if err != nil {
+		log.Println(err)
+	}
 }

@@ -4,15 +4,9 @@ import (
 	"container/list"
 )
 
-type Operation struct {
-	symbol    byte //符号
-	factorNum int  //因子个数
-	priority  int  //优先级 越大优先级越高
-}
-
 //获得函数参数个数
 func GetOperationFactorNum(operationName byte) int {
-	num := -1
+	var num int
 	switch operationName {
 	case '+', '-', '*', '/', '%':
 		num = 2
@@ -59,21 +53,21 @@ func GetInfixExpression(s []byte) []byte {
 
 	s = GetEffectGene(s)
 
-	//用序号代表基因所在位置 用双向链表构建解码表达式 表示括号:-1->( -2->)
+	//用序号代表基因所在位置 用双向链表构建解码表达式 表示括号: -1 -> ( , -2 -> )
 	link := list.New()
 	i := 0
 	j := 0
-	pos := link.PushBack(i)
+	link.PushBack(i)
 	if !isTerm(s[i]) {
 		for i < len(s) {
 			//查找i节点的位置
-			pos = search(link, i)
+			pos := search(link, i)
 			if GetOperationFactorNum(s[i]) == 1 {
 				j++
 				if !isTerm(s[j]) {
 					pos1 := link.InsertAfter(-1, pos)
 					pos1 = link.InsertAfter(j, pos1)
-					pos1 = link.InsertAfter(-2, pos1)
+					link.InsertAfter(-2, pos1)
 				} else {
 					link.InsertAfter(j, pos)
 				}
@@ -82,7 +76,7 @@ func GetInfixExpression(s []byte) []byte {
 				if !isTerm(s[j]) {
 					pos1 := link.InsertBefore(-2, pos)
 					pos1 = link.InsertBefore(j, pos1)
-					pos1 = link.InsertBefore(-1, pos1)
+					link.InsertBefore(-1, pos1)
 				} else {
 					link.InsertBefore(j, pos)
 				}
@@ -90,7 +84,7 @@ func GetInfixExpression(s []byte) []byte {
 				if !isTerm(s[j]) {
 					pos2 := link.InsertAfter(-1, pos)
 					pos2 = link.InsertAfter(j, pos2)
-					pos2 = link.InsertAfter(-2, pos2)
+					link.InsertAfter(-2, pos2)
 				} else {
 					link.InsertAfter(j, pos)
 				}

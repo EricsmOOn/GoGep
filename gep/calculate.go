@@ -90,13 +90,13 @@ func calculateOpt(exp []interface{}) (float64, error) {
 			if GetOperationFactorNum(char) == 1 {
 				x := 0.0
 				//找一个终结符
-				for i := len(exp) - 1; i > 0; i-- {
+				flag := true
+				for i := len(exp) - 1; flag; i-- {
 					switch exp[i].(type) {
 					case float64:
 						x = exp[i].(float64)
-						break
+						flag = false
 					}
-					break
 				}
 				//运算
 				switch char {
@@ -117,21 +117,23 @@ func calculateOpt(exp []interface{}) (float64, error) {
 				x := 0.0
 				num1 := 0.0
 				num2 := 0.0
-				for i := len(exp) - 1; i > 0; i-- {
+				flag := true
+				var j int
+				for i := len(exp) - 1; flag; i-- {
 					switch exp[i].(type) {
 					case float64:
 						num2 = exp[i].(float64)
-						break
+						flag = false
 					}
-					for j := i - 1; j > 0; j-- {
-						switch exp[i].(type) {
-						case float64:
-							num1 = exp[j].(float64)
-							break
-						}
-						break
+					j = i
+				}
+				flag = true
+				for j = j - 1; flag; j-- {
+					switch exp[j].(type) {
+					case float64:
+						num1 = exp[j].(float64)
+						flag = false
 					}
-					break
 				}
 				switch char {
 				case '+':

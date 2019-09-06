@@ -48,7 +48,7 @@ func PrintGreat(g *Gene) {
 	for t := 0; t < NumOfGenes; t++ {
 		fmt.Printf("%s", g.InfixExpression[t])
 		if t < NumOfGenes-1 {
-			fmt.Printf(string(LinkFun))
+			fmt.Print(string(LinkFun))
 		}
 	}
 	fmt.Println()

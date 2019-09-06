@@ -1,4 +1,4 @@
-module github.com/EricsmOOn/gep-go
+module github.com/EricsmOOn/GoGep
 
 require (
 	github.com/blend/go-sdk v2.0.0+incompatible // indirect
