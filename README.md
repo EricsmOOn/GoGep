@@ -1,6 +1,6 @@
 # GoGep
-   [![Build Status](https://travis-ci.org/EricsmOOn/gep-go.svg?branch=master)](https://travis-ci.org/EricsmOOn/gep-go) 
-   [![Go Report Card](https://goreportcard.com/badge/github.com/EricsmOOn/gep-go)](https://goreportcard.com/report/github.com/EricsmOOn/gep-go)
+   [![Build Status](https://travis-ci.org/EricsmOOn/GoGep.svg?branch=master)](https://travis-ci.org/EricsmOOn/GoGep) 
+   [![Go Report Card](https://goreportcard.com/badge/github.com/EricsmOOn/GoGep)](https://goreportcard.com/report/github.com/EricsmOOn/GoGep)
    
 **用Golang实现的GEP *[基因表达式编程]* 算法**
    
