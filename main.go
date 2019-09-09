@@ -5,12 +5,13 @@ import (
 	"github.com/EricsmOOn/GoGep/chart"
 	"github.com/EricsmOOn/GoGep/gep"
 	"net/http"
+	"strconv"
 )
 
 func main() {
 
 	//读取数据集
-	gep.InitTestData()
+	gep.InitSampleData()
 	//初始化种群
 	genes := gep.CreateGenes()
 
@@ -37,12 +38,10 @@ func main() {
 		//终止条件(genes,最大运行代数(可选))
 		if isEnd(genes, gep.MaxGenerations) {
 			//展示图表
-			if gep.Chart {
-				http.HandleFunc("/", chart.Handler)
-				e := http.ListenAndServe(":"+string(gep.ChartPort), nil)
-				if e != nil {
-					fmt.Print(e.Error())
-				}
+			http.HandleFunc("/", chart.Handler)
+			e := http.ListenAndServe(":"+strconv.Itoa(gep.ChartPort), nil)
+			if e != nil {
+				fmt.Print(e.Error())
 			}
 			return
 		}
@@ -63,12 +62,14 @@ func isEnd(genes []*gep.Gene, maxGenerations ...int) bool {
 					g = i
 				}
 			}
+			chart.GetPredictResult(*g)
 			gep.PrintGreat(g)
 			return true
 		}
 	}
 	for _, i := range genes {
 		if i.Fitness > gep.ResultRang {
+			chart.GetPredictResult(*i)
 			gep.PrintGreat(i)
 			return true
 		}

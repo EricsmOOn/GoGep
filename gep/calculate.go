@@ -12,14 +12,20 @@ var Wg sync.WaitGroup
 func CalculateFitnessOpt(genes []*Gene) {
 	for _, gene := range genes {
 		Wg.Add(1)
-		go calculateFitOpt(gene, GetEffectGenes(*gene))
+		switch FitnessFunc {
+		case 0:
+			go calculateFitOpt(gene, GetEffectGenes(*gene))
+		case 1:
+			go calculateFitOptOther(gene, GetEffectGenes(*gene))
+		default:
+		}
 	}
 }
 
 //简化式子后计算个体适应度
 func calculateFitOpt(gene *Gene, easyEquation [][]byte) {
 	defer Wg.Done()
-	testData := ReadTestData()
+	testData := ReadSampleData()
 	fsum := 0.0
 	for _, td := range testData {
 		//逐个读入测试数据
@@ -37,11 +43,33 @@ func calculateFitOpt(gene *Gene, easyEquation [][]byte) {
 	gene.Fitness = fsum
 }
 
-//计算个体对一组数据的适应度
+//简化式子后计算个体适应度使用特殊方法
+func calculateFitOptOther(gene *Gene, easyEquation [][]byte) {
+	defer Wg.Done()
+	testData := ReadSampleData()
+	eiup := 0.0
+	eidown := 0.0
+	ei := 0.0
+	for _, td := range testData {
+		//逐个读入测试数据
+		//求表达 result
+		result, err := calculatePerFitOpt(easyEquation, td.TermVarSet)
+		//杀死非法表达式
+		if err == nil {
+			gene.Fitness = 0
+		}
+		eiup += math.Pow(result-td.Result, 2)
+		eidown += math.Pow(result-ResultSampleAvg, 2)
+	}
+	ei = math.Sqrt(eiup / eidown)
+	gene.Fitness = SelectRang * 1 / (1 + ei)
+}
+
+//计算个体对一条样例的适应度前的预操作
 func calculatePerFitOpt(g [][]byte, v []float64) (float64, error) {
 	var result float64
 	for i := 0; i < len(g); i++ {
-		//拼接个体的几个基因到 slice
+		//转换基因到 slice
 		slice := make([]interface{}, 0)
 		for _, value := range g[i] {
 			slice = append(slice, value)

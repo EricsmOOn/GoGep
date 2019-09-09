@@ -19,23 +19,29 @@ var TermSetAll = []byte{
 /*
 	运行参数配置
 */
-//CSV文件名称(请放置于根目录下)
-var CsvFileName = "sunspots.csv"
+//CSV样本集文件名称(请放置于根目录下)
+var CsvSampleFileName = "sunspots_sample.csv"
+
+//CSV测试集文件名称(请放置于根目录下)
+var CsvTestFileName = "sunspots_test.csv"
 
 //控制台输出方式 Detailed - 详细,Simple - 简略,Simplest - 最简略
 var ViewStyle = Simplest
 
-//开启图表
+//开启遗传记录图表
 var Chart = Close
-
-//图表端口
-var ChartPort = 8081
 
 //图表记录跨度 0为每次变异记录
 var ChartInterval = 0
 
+//图表端口
+var ChartPort = 8081
+
 //最高运行代数 0 - 不限制
-var MaxGenerations = 5000
+var MaxGenerations = 8000
+
+//适应度函数选择
+var FitnessFunc = 1
 
 /*
 	GEP参数配置
@@ -49,8 +55,11 @@ var PopulationsSize = 100
 //选择范围
 var SelectRang float64 = 1000
 
+//样本结果平均数
+var ResultSampleAvg = 0.0
+
 //选择精度
-var Precision float64 = 800
+var Precision float64 = 790
 
 //染色体含有基因数 3 4
 var NumOfGenes = 3
@@ -116,7 +125,7 @@ var DynamicDcMutationRate = 1.0
 var EliteNum = 0
 
 //不变异精英策略个数
-var NonEliteNum = 4
+var NonEliteNum = 2
 
 //转盘赌个数
 var TurnNum = PopulationsSize - EliteNum - NonEliteNum
