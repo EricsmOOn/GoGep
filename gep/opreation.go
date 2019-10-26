@@ -10,7 +10,7 @@ func GetOperationFactorNum(operationName byte) int {
 	switch operationName {
 	case '+', '-', '*', '/', '%':
 		num = 2
-	case 'Q', 'N':
+	case 'Q', 'N', '@', '$':
 		num = 1
 	default:
 		num = -1

@@ -37,17 +37,12 @@ func InitSampleData() {
 		sds = append(sds, sd)
 	}
 
-	tds = make([]Data, 0)
-	csvFile = testDataScanner()
-	varSetNum = len(csvFile[0]) - 1
-	var td Data
-	for _, s := range csvFile {
-		td = Data{make([]float64, varSetNum), 0.0}
-		for i := 0; i < varSetNum; i++ {
-			td.TermVarSet[i], _ = strconv.ParseFloat(s[i], 64)
-		}
-		td.Result, _ = strconv.ParseFloat(s[varSetNum], 64)
-		tds = append(tds, td)
+	if TenCheck {
+		lens := len(sds)
+		r := R.Intn(lens / 10)
+		tds = make([]Data, 0)
+		tds = append(tds, sds[r:r+10]...)
+		sds = append(sds[:r], sds[r+11:]...)
 	}
 
 	TermSet = TermSetAll[:GetVarSetNum()]
@@ -57,20 +52,6 @@ func InitSampleData() {
 
 func sampleDataScanner() [][]string {
 	csvFile, err := os.Open("./" + CsvSampleFileName)
-	if err != nil {
-		panic(err)
-	}
-	defer csvFile.Close()
-	csvReader := csv.NewReader(csvFile)
-	rows, err := csvReader.ReadAll()
-	if err != nil {
-		panic(err)
-	}
-	return rows
-}
-
-func testDataScanner() [][]string {
-	csvFile, err := os.Open("./" + CsvTestFileName)
 	if err != nil {
 		panic(err)
 	}

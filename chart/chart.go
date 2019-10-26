@@ -4,6 +4,7 @@ import (
 	"github.com/EricsmOOn/GoGep/gep"
 	"github.com/chenjiandongx/go-echarts/charts"
 	"log"
+	"math"
 	"net/http"
 	"os"
 )
@@ -16,7 +17,15 @@ var XValue = make([]float64, 0)
 
 var XValueTestPred = make([]float64, 0)
 
+var YValueTestPred []float64
+
+var YValueTestPredError = make([]float64, 0)
+
 var XValueSamplePred = make([]float64, 0)
+
+var YValueSamplePred []float64
+
+var YValueSamplePredError = make([]float64, 0)
 
 var Gene gep.Gene
 
@@ -24,13 +33,34 @@ var MaxPrinter = 0.0
 
 func GetPredictResult(genes gep.Gene) {
 	Gene = genes
-	num := gep.GetTestDataNum()
-	for i := 1; i <= num; i++ {
-		XValueTestPred = append(XValueTestPred, float64(i))
+	data := gep.ReadTestData()
+	for i := 1; i <= len(data); i++ {
+		XValueTestPred = append(XValueTestPred, float64(i+9))
 	}
-	num = gep.GetSampleDataNum()
-	for i := 1; i <= num; i++ {
+	YValueTestPred = gep.GetPredictTestResult(gep.GetEffectGenes(Gene))
+	for i, r := range YValueTestPred {
+		if data[i].Result != 0 {
+			YValueTestPredError = append(YValueTestPredError, (math.Abs(data[i].Result-r)/data[i].Result)*100)
+		} else {
+			YValueTestPredError = append(YValueTestPredError, math.Abs(data[i].Result-r)*100)
+		}
+	}
+	data = gep.ReadSampleData()
+	for i := 1; i <= len(data); i++ {
 		XValueSamplePred = append(XValueSamplePred, float64(i))
+	}
+	YValueSamplePred = gep.GetPredictSampleResult(gep.GetEffectGenes(Gene))
+	for i, r := range YValueSamplePred {
+		if data[i].Result != 0 {
+			YValueSamplePredError = append(YValueSamplePredError, (math.Abs(data[i].Result-r)/data[i].Result)*100)
+		} else {
+			YValueSamplePredError = append(YValueSamplePredError, math.Abs(data[i].Result-r)*100)
+		}
+		//if data[i].Result == 0{
+		//	YValueSamplePredError = append(YValueSamplePredError,data[i].Result-r)
+		//}
+		//f, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", math.Abs(data[i].Result-r)/data[i].Result), 64)
+		//YValueSamplePredError = append(YValueSamplePredError,f)
 	}
 }
 
@@ -78,8 +108,8 @@ func lineBase1() *charts.Line {
 		charts.YAxisOpts{Name: "适应度", Scale: true, SplitLine: charts.SplitLineOpts{Show: false}},
 		charts.XAxisOpts{Name: "进化代数"})
 	line.AddXAxis(XValue).
-		AddYAxis("每代最大适应度", MaxFitness, charts.LineOpts{Smooth: true}).
-		AddYAxis("每代平均适应度", AvaFitness, charts.LineOpts{Smooth: true})
+		AddYAxis("每代最大适应度", MaxFitness, charts.LineOpts{Smooth: false}).
+		AddYAxis("每代平均适应度", AvaFitness, charts.LineOpts{Smooth: false})
 	return line
 }
 
@@ -90,13 +120,17 @@ func lineBase2() *charts.Line {
 		charts.ToolboxOpts{Show: true},
 		charts.YAxisOpts{Name: "适应度", Scale: true, SplitLine: charts.SplitLineOpts{Show: false}},
 		charts.XAxisOpts{Name: "样本"})
-	line.AddXAxis(XValueTestPred).AddYAxis("测试值", gep.GetTestResult(), charts.LineOpts{Smooth: true}).
-		AddYAxis("预测值", gep.GetPredictTestResult(gep.GetEffectGenes(Gene)), charts.LineOpts{Smooth: true})
-	//line.SetSeriesOptions(
-	//	charts.MLNameTypeItem{Name: "平均值", Type: "average"},
-	//	charts.LineOpts{Smooth: true},
-	//	charts.MLStyleOpts{Label: charts.LabelTextOpts{Show: true, Formatter: "{b}: {c}"}},
-	//)
+	line.AddXAxis(XValueTestPred).AddYAxis("测试值", gep.GetTestResult(), charts.LineOpts{Smooth: false}).
+		AddYAxis("预测值", YValueTestPred, charts.LineOpts{Smooth: false})
+
+	line2 := charts.NewLine()
+	line2.AddXAxis(XValueTestPred).AddYAxis("误差值", YValueTestPredError)
+	line2.SetSeriesOptions(
+		charts.MLNameTypeItem{Name: "平均值", Type: "average"},
+		charts.LineOpts{Smooth: false},
+		charts.MLStyleOpts{Label: charts.LabelTextOpts{Show: true, Formatter: "{b}: {c}"}},
+	)
+	line.Overlap(line2)
 	return line
 }
 
@@ -107,13 +141,17 @@ func lineBase3() *charts.Line {
 		charts.ToolboxOpts{Show: true},
 		charts.YAxisOpts{Name: "适应度", Scale: true, SplitLine: charts.SplitLineOpts{Show: false}},
 		charts.XAxisOpts{Name: "样本"})
-	line.AddXAxis(XValueSamplePred).AddYAxis("样本值", gep.GetSampleResult(), charts.LineOpts{Smooth: true}).
-		AddYAxis("预测值", gep.GetPredictSampleResult(gep.GetEffectGenes(Gene)), charts.LineOpts{Smooth: true})
-	//line.SetSeriesOptions(
-	//	charts.MLNameTypeItem{Name: "平均值", Type: "average"},
-	//	charts.LineOpts{Smooth: true},
-	//	charts.MLStyleOpts{Label: charts.LabelTextOpts{Show: true, Formatter: "{b}: {c}"}},
-	//)
+	line.AddXAxis(XValueSamplePred).AddYAxis("样本值", gep.GetSampleResult(), charts.LineOpts{Smooth: false}).
+		AddYAxis("预测值", YValueSamplePred, charts.LineOpts{Smooth: false})
+
+	line2 := charts.NewLine()
+	line2.AddXAxis(XValueSamplePred).AddYAxis("误差值", YValueSamplePredError)
+	line2.SetSeriesOptions(
+		charts.MLNameTypeItem{Name: "平均值", Type: "average"},
+		charts.LineOpts{Smooth: false},
+		charts.MLStyleOpts{Label: charts.LabelTextOpts{Show: true, Formatter: "{b}: {c}"}},
+	)
+	line.Overlap(line2)
 	return line
 }
 

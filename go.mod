@@ -1,9 +1,10 @@
 module github.com/EricsmOOn/GoGep
 
+go 1.12
+
 require (
-	github.com/blend/go-sdk v2.0.0+incompatible // indirect
-	github.com/chenjiandongx/go-echarts v0.0.0-20190728043558-70059cac90d5
+	github.com/chenjiandongx/go-echarts v0.0.0-20190915064101-cbb3b43ade5d
+	github.com/go-echarts/go-echarts v0.0.0-20190915064101-cbb3b43ade5d // indirect
 	github.com/gobuffalo/packr v1.30.1 // indirect
-	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/wcharczuk/go-chart v2.0.1+incompatible
+	github.com/stretchr/testify v1.4.0 // indirect
 )

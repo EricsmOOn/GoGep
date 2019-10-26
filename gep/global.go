@@ -1,5 +1,16 @@
 package gep
 
+/*
+ A R I M A : 差 分 整 合 移 动 自 回 归
+ 时间序列预测:
+	 //1.改进的适应度函数<拟合程度参与适应度函数计算>
+	 //2.误差分析函数
+	 //3.预测新的一组数据集
+	 4.避免早熟收敛
+		I.  增大变异率
+		II. 增大种群数量
+		III.在进化一定阶段时引入新个体<种群年龄分层>
+*/
 const (
 	Open     = true
 	Close    = false
@@ -20,13 +31,19 @@ var TermSetAll = []byte{
 	运行参数配置
 */
 //CSV样本集文件名称(请放置于根目录下)
+//var CsvSampleFileName = "vegetables_sample.csv"
 var CsvSampleFileName = "sunspots_sample.csv"
 
-//CSV测试集文件名称(请放置于根目录下)
-var CsvTestFileName = "sunspots_test.csv"
+//var CsvSampleFileName = "a3_sample.csv"
 
 //控制台输出方式 Detailed - 详细,Simple - 简略,Simplest - 最简略
 var ViewStyle = Simplest
+
+//开启 10*10 交叉检验
+var TenCheck = Open
+
+//开启生成时函数符比例增多
+var MoreFunc = Close
 
 //开启遗传记录图表
 var Chart = Close
@@ -41,7 +58,7 @@ var ChartPort = 8081
 var MaxGenerations = 8000
 
 //适应度函数选择
-var FitnessFunc = 1
+var FitnessFunc = 0
 
 /*
 	GEP参数配置
@@ -59,16 +76,16 @@ var SelectRang float64 = 1000
 var ResultSampleAvg = 0.0
 
 //选择精度
-var Precision float64 = 790
+var Precision float64 = 0
 
 //染色体含有基因数 3 4
-var NumOfGenes = 3
+var NumOfGenes = 4
 
 //连接函数
 var LinkFun = byte('+')
 
 //函数集
-var FunSet = []byte{'+', '-', '*', '/'}
+var FunSet = []byte{'+', '-', '*', '/', '@'} //,'@','$','N','Q'
 
 //终点集
 var TermSet = TermSetAll
@@ -89,13 +106,13 @@ var RecombinationRate = 0.1
 var ISTranspositionRate = 0.1
 
 //插入转座元素长度
-var ISElementsLength = 2
+var ISElementsLength = 3
 
 //根转座率
 var RISTranspositionRate = 0.1
 
 //根转座元素长度
-var RISElementsLength = 2
+var RISElementsLength = 3
 
 //转座概率
 var GeneTranspositionRate = 0.1

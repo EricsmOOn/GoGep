@@ -68,7 +68,7 @@ func isEnd(genes []*gep.Gene, maxGenerations ...int) bool {
 		}
 	}
 	for _, i := range genes {
-		if i.Fitness > gep.ResultRang {
+		if i.Fitness >= gep.ResultRang {
 			chart.GetPredictResult(*i)
 			gep.PrintGreat(i)
 			return true

@@ -15,6 +15,9 @@ func GetSampleResult() []float64 {
 	for _, sd := range sds {
 		sampleResults = append(sampleResults, sd.Result)
 	}
+	//for i:=0;i<len(sds) - 1;i++ {
+	//	sampleResults = append(sampleResults, sds[i+1].Result - sds[i].Result)
+	//}
 	return sampleResults
 }
 

@@ -13,10 +13,14 @@ func CalculateFitnessOpt(genes []*Gene) {
 	for _, gene := range genes {
 		Wg.Add(1)
 		switch FitnessFunc {
-		case 0:
+		case 0: //普通
 			go calculateFitOpt(gene, GetEffectGenes(*gene))
-		case 1:
+		case 1: //百分比
 			go calculateFitOptOther(gene, GetEffectGenes(*gene))
+		case 2: //改进普通
+			go calculateFitOpt2(gene, GetEffectGenes(*gene))
+		case 3:
+			go calculateFitOpt3(gene, GetEffectGenes(*gene))
 		default:
 		}
 	}
@@ -32,8 +36,9 @@ func calculateFitOpt(gene *Gene, easyEquation [][]byte) {
 		//求表达 result
 		result, err := calculatePerFitOpt(easyEquation, td.TermVarSet)
 		//杀死非法表达式
-		if err == nil {
+		if err != nil {
 			gene.Fitness = 0
+			break
 		}
 		fi := SelectRang - math.Abs(result-td.Result)
 		if fi > 0 {
@@ -41,6 +46,63 @@ func calculateFitOpt(gene *Gene, easyEquation [][]byte) {
 		}
 	}
 	gene.Fitness = fsum
+}
+
+//简化式子后计算个体适应度
+func calculateFitOpt3(gene *Gene, easyEquation [][]byte) {
+	defer Wg.Done()
+	testData := ReadSampleData()
+	fsum := 0.0
+	for _, td := range testData {
+		//逐个读入测试数据
+		//求表达 result
+		result, err := calculatePerFitOpt(easyEquation, td.TermVarSet)
+		//杀死非法表达式
+		if err != nil {
+			gene.Fitness = 0
+			break
+		}
+		b := 1.0
+		if td.Result == 0 {
+			b = math.Abs(result - td.Result)
+		} else {
+			b = math.Abs(result-td.Result) / td.Result
+		}
+		fi := SelectRang - math.Abs(result-td.Result)*b
+		if fi > 0 {
+			fsum += fi
+		}
+	}
+	gene.Fitness = fsum
+}
+
+//简化式子后计算个体适应度R^2改进
+func calculateFitOpt2(gene *Gene, easyEquation [][]byte) {
+	defer Wg.Done()
+	testData := ReadSampleData()
+	fsum := 0.0
+	eiup := 0.0
+	eidown := 0.0
+	ei := 0.0
+	for _, td := range testData {
+		//逐个读入测试数据
+		//求表达 result
+		result, err := calculatePerFitOpt(easyEquation, td.TermVarSet)
+		//杀死非法表达式
+		if err != nil {
+			gene.Fitness = 0
+			break
+		}
+		eValue := math.Abs(result - td.Result)
+		eiup += math.Pow(eValue, 2)
+		eidown += math.Pow(result-ResultSampleAvg, 2)
+		fi := SelectRang - eValue
+		if fi > 0 {
+			fsum += fi
+		}
+	}
+	ei = eiup / eidown
+	gene.Fitness = fsum * (1 - ei)
 }
 
 //简化式子后计算个体适应度使用特殊方法
@@ -138,6 +200,14 @@ func calculateOpt(exp []interface{}) (float64, error) {
 				case 'N':
 					tmp := exp[i+1 : len(exp)-1]
 					exp = append(exp[:i], -x)
+					exp = append(exp, tmp...)
+				case '$':
+					tmp := exp[i+1 : len(exp)-1]
+					exp = append(exp[:i], math.Sin(x))
+					exp = append(exp, tmp...)
+				case '@':
+					tmp := exp[i+1 : len(exp)-1]
+					exp = append(exp[:i], math.Cos(x))
 					exp = append(exp, tmp...)
 				}
 			} else if GetOperationFactorNum(char) == 2 {

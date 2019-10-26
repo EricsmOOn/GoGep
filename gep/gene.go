@@ -24,9 +24,18 @@ func creatRandomGene(generation int) *Gene {
 	gene := Gene{make([]byte, 0, NumOfGenes*GeneLength), make([][]byte, 0), 0, generation}
 
 	for k := 0; k < NumOfGenes; k++ {
-
-		for i := 0; i < HeadLength; i++ {
-			gene.Gene = append(gene.Gene, set[R.Intn(funSetNum+termSetNum)])
+		if MoreFunc {
+			for i := 0; i < HeadLength; i++ {
+				if R.Float64() > 0.5 {
+					gene.Gene = append(gene.Gene, FunSet[R.Intn(funSetNum)])
+				} else {
+					gene.Gene = append(gene.Gene, TermSet[R.Intn(termSetNum)])
+				}
+			}
+		} else {
+			for i := 0; i < HeadLength; i++ {
+				gene.Gene = append(gene.Gene, set[R.Intn(funSetNum+termSetNum)])
+			}
 		}
 
 		//fmt.Println(*(*string)(unsafe.Pointer(&gene.Gene)))

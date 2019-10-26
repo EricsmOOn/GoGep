@@ -38,6 +38,16 @@ func PrintMostEasy(genes []*Gene) {
 	}
 	if flag {
 		fmt.Printf("[%6d] - [%s] - [%.4f]\n", g.Generation, g.Gene, g.Fitness)
+		//g.InfixExpression = GetInfixExpressions(*g)
+		//fmt.Print("中缀式:  ")
+		//for t := 0; t < NumOfGenes; t++ {
+		//	fmt.Printf("%s", g.InfixExpression[t])
+		//	if t < NumOfGenes-1 {
+		//		fmt.Print(string(LinkFun))
+		//	}
+		//}
+		//fmt.Println()
+		//
 	}
 }
 
